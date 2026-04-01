@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+
+@theme{
+  --color-bakery-mint: #D1E8E2;
+  --color-bakery-stone: #E8E8E3;
+  --font-display: "Satoshi", "sans-serif";  
+  --color-surface: #F2F2F0;
+  --color-surface-hover: #E3E3DE;
+}
+

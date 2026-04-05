@@ -19,7 +19,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
     handleGetItem($dbh);
     break;
   case "POST":
-    handlePostItem($dbh);
+    handlePostItem($dbh, $ini_array["img_path"]);
     break;
 };
 
@@ -88,7 +88,7 @@ function checkfile($target_dir)
   }
 }
 
-function handlePostItem($dbh)
+function handlePostItem($dbh, $target_dir)
 {
   $name = filter_input(INPUT_POST, "name");
   $price = filter_input(INPUT_POST, "price", FILTER_VALIDATE_FLOAT);
@@ -102,7 +102,6 @@ function handlePostItem($dbh)
     echo json_encode(["error" => ["Invalid Argument Passed In"]]);
     exit;
   }
-  $target_dir = $ini_array["img_path"];
   checkfile($target_dir);
 
   $UPLOAD_STATEMENT = "INSERT INTO products (name, price, quantity, description, discount, image_link, category) VALUES (?, ?, ?, ?, ?, ?, ?)";

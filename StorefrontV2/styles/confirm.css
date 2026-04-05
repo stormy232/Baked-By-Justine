@@ -1,0 +1,144 @@
+/* ─────────────────────────────────────────
+   BAKED BY JUSTINE — Confirmation Page Styles
+   confirm.html
+───────────────────────────────────────── */
+
+.confirm-wrap {
+  min-height: calc(100vh - 62px);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 52px 20px 80px;
+}
+
+.confirm-card { width: 100%; max-width: 520px; }
+
+/* ── TOP DARK SECTION ── */
+.confirm-top {
+  background: var(--brown);
+  border-radius: 16px 16px 0 0;
+  padding: 40px 36px 32px;
+  text-align: center;
+}
+
+.confirm-icon {
+  width: 68px; height: 68px;
+  border-radius: 50%;
+  background: var(--tan);
+  color: var(--brown);
+  font-size: 28px;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 18px;
+  box-shadow: 0 4px 20px rgba(196,150,62,0.5);
+}
+
+.confirm-top h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 28px;
+  color: var(--parch);
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.confirm-top p {
+  font-size: 14px;
+  color: rgba(255,255,255,0.45);
+  line-height: 1.6;
+}
+
+/* ── WHITE BODY ── */
+.confirm-body {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 16px 16px;
+  padding: 26px;
+}
+
+/* ── STATUS BADGE ── */
+.confirm-badge-row { text-align: center; margin-bottom: 16px; }
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: #fef5e4;
+  border: 1px solid #e8cf8c;
+  color: #7a5200;
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.pdot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: #e09000;
+  animation: blink 1.6s ease infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.25} }
+
+/* ── ORDER ID BOX ── */
+.order-id-box {
+  background: var(--parch);
+  border-radius: 10px;
+  padding: 16px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+.order-id-label {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 5px;
+}
+.order-id-val {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 30px;
+  color: var(--brown);
+  font-weight: 600;
+}
+
+/* ── DETAILS TABLE ── */
+.c-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin-bottom: 18px;
+}
+.c-table tr { border-bottom: 1px solid var(--border); }
+.c-table tr:last-child { border-bottom: none; }
+.c-table td { padding: 8px 4px; }
+.c-table td:first-child { color: var(--muted); width: 42%; }
+.c-table td:last-child  { color: var(--brown); font-weight: 600; text-align: right; }
+
+/* ── SQL BLOCK ── */
+.sql-block {
+  background: #1c1510;
+  border-radius: 9px;
+  padding: 14px 16px;
+  font-family: 'Courier New', monospace;
+  font-size: 12.5px;
+  color: #c8b48a;
+  line-height: 1.8;
+  overflow-x: auto;
+  margin-bottom: 20px;
+  border: 1px solid #3a2a18;
+}
+.sql-block .sk { color: #c4963e; }  /* keyword */
+.sql-block .st { color: #7db8f5; }  /* table   */
+.sql-block .sv { color: #88c87a; }  /* value   */
+.sql-block .sc { color: #555555; }  /* comment */
+
+/* ── CONFIRM ACTION BUTTONS ── */
+.confirm-actions { display: flex; flex-direction: column; gap: 8px; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 560px) {
+  .confirm-top  { padding: 28px 20px 24px; }
+  .confirm-body { padding: 20px; }
+  .order-id-val { font-size: 24px; }
+}

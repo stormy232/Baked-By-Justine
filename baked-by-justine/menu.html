@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Menu — Baked By Justine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/menu.css" />
+</head>
+<body>
+
+<!-- ════ NAV ════ -->
+<nav id="navbar">
+  <a href="index.html" class="nav-logo">Baked By <span>Justine</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html#story">About</a></li>
+    <li><a href="index.html#specialties">Products</a></li>
+    <li><a href="index.html#reviews">Reviews</a></li>
+    <li><a href="index.html#contact">Contact</a></li>
+    <li><a href="products.html" class="btn btn-primary nav-btn active-nav">Order Now</a></li>
+  </ul>
+  <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="index.html#story">About</a>
+  <a href="index.html#specialties">Products</a>
+  <a href="index.html#reviews">Reviews</a>
+  <a href="index.html#contact">Contact</a>
+  <a href="products.html">Order Now</a>
+</div>
+
+<!-- ════ MENU HERO ════ -->
+<header class="menu-hero">
+  <div class="menu-hero-bg"></div>
+  <div class="menu-hero-content">
+    <span class="section-tag">Fresh Every Morning</span>
+    <h1>Our <em>Menu</em></h1>
+    <p>Everything is made in-house daily. Prices shown are per item unless noted otherwise.</p>
+  </div>
+</header>
+
+<!-- ════ CATEGORY TABS ════ -->
+<div class="menu-tabs-wrap">
+  <div class="menu-tabs" id="menuTabs">
+    <button class="tab-btn active" data-cat="all">All Items</button>
+    <button class="tab-btn" data-cat="breads">Artisan Breads</button>
+    <button class="tab-btn" data-cat="pastries">Pastries</button>
+    <button class="tab-btn" data-cat="cakes">Cakes & Desserts</button>
+    <button class="tab-btn" data-cat="cookies">Cookies & Treats</button>
+    <button class="tab-btn" data-cat="drinks">Drinks</button>
+  </div>
+</div>
+
+<!-- ════ MENU CONTENT ════ -->
+<main class="menu-main">
+
+  <!-- ARTISAN BREADS -->
+  <section class="menu-section" id="cat-breads" data-cat="breads">
+    <div class="menu-section-header">
+      <span class="menu-section-emoji">🍞</span>
+      <h2>Artisan Breads</h2>
+      <p>Stone-baked daily using long-ferment doughs. Best enjoyed fresh.</p>
+    </div>
+    <div class="menu-grid">
+
+      <div class="menu-item">
+        <div class="menu-item-info">
+          <div class="menu-item-top">
+            <h3>Classic Sourdough</h3>
+            <span class="price">$8.50</span>
+          </div>
+          <p>Traditional long-ferment sourdough with a crispy crust and chewy interior. Full loaf.</p>
+          <div class="item-tags"><span class="tag tag-vegan">Vegan</span></div>
+        </div>
+      </div>
+
+      <div class="menu-item">
+        <div class="menu-item-info">
+          <div class="menu-item-top">
+            <h3>Rustic Baguette</h3>
+            <span class="price">$4.00</span>
+          </div>
+          <p>Classic French-style baguette with a golden crust. Perfect with butter or cheese.</p>
+          <div class="item-tags"><span class="tag tag-vegan">Vegan</span></div>
+        </div>
+      </div>
+
+      <div class="menu-item">
+        <div class="menu-item-info">
+          <div class="menu-item-top">
+            <h3>Rosemary Focaccia</h3>
+            <span class="price">$7.00</span>
+          </div>
+          <p>Thick, airy Italian flatbread topped with fresh rosemary and sea salt. Half-sheet.</p>
+          <div class="item-tags"><span class="tag tag-vegan">Vegan</span></div>
+        </div>
+      </div>
+
+      <div class="menu-item">
+        <div class="menu-item-info">
+          <div class="menu-item-top">
+            <h3>Multigrain Loaf</h3>
+            <span class="price">$9.00</span>
+          </div>
+          <p>Packed with sunflower seeds, oats, and whole wheat. Hearty and nutritious. Full loaf.</p>
+          <div class="item-tags"><span class="tag tag-vegan">Vegan</span></div>
+        </div>
+      </div>
+
+      <div class="menu-item">
+        <div class="menu-item-info">
+          <div class="menu-item-top">
+            <h3>Cheddar & Jalapeño Loaf</h3>
+            <span class="price">$10.50</span>
+          </div>
+          <p>Sharp cheddar and pickled jalapeños baked into a soft, flavourful pull-apart loaf.</p>
+          <div class="item-tags"><span class="tag tag-popular">Popular</span></div>
+        </div>
+      </div>
+
+      <div class="menu-item">
+        <div class="menu-item-info">
+          <div class="menu-item-top">
+            <h3>Rye Bread</h3>
+            <span class="price">$8.00</span>
+          </div>
+          <p>Dense and flavourful dark rye made with caraway seeds. Full loaf.</p>
+          <div class="item-tags"><span class="tag tag-vegan">Vegan</span></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- PASTRIES -->
+  <section class="menu-section" id="cat-pastries" data-cat="pastries">
+    <div class="menu-section-header">
+      <span class="menu-section-emoji">🥐</span>
+      <h2>Fresh Pastries</h2>
+      <p>Laminated and baked from scratch every morning. Best before noon.</p>
+    </div>
+    <div class="menu-grid">
+
+      <div class="menu-item">
+        <div class="menu-item-info">
+          <div class="menu-item-top">
+            <h3>Butter Croissant</h3>
+            <span class="price">$3.50</span>
+          </div>
+          <p>Classic French croissant with 36 layers of pure European butter. Light and flaky.</p>
+          <div class="item-tags"><span class="tag tag-popular">Popular</span></div>
+        </div>
+      </div>
+
+      <div class="menu-item">
+        <div class="menu-item-info">
+          <div class="menu-item-top">
+            <h3>Almond Croissant</h3>
+            <span class="price">$4.25</span>
+          </div>
+          <p>Twice-baked croissant filled with almond cream and topped with toasted sliced almonds.</p>
+          <div class="item-tags"><span class="tag tag-popular">Popular</span></div>
+        </div>
+      </div>
+
+      <div class="menu-item">
+        <div class="menu-item-info">
+          <div class="menu-item-top">
+            <h3>Pain au Chocolat</h3>
+            <span class="price">$4.00</span>
+          </div>
+          <p>Buttery pastry wrapped around two pieces of dark Belgian chocolate.</p>
+        </div>
+      </div>
+
+      <div class="menu-item">
+        <div class="menu-item-info">
+          <div class="menu-item-top">
+            <h3>Seasonal Fruit Danish</h3>
+            <span class="price">$4.50</span>
+          </div>
+          <p>Laminated dough filled with vanilla custard and topped with seasonal fresh fruit. Ask what's in season.</p>
+        </div>
+      </div>
+
+      <div class="menu-item">
+        <div class="menu-item-info">
+          <div class="menu-item-top">
+            <h3>Cinnamon Roll</h3>
+            <span class="price">$4.75</span>
+          </div>
+          <p>Soft, pillowy roll swirled with cinnamon sugar and topped with cream cheese icing.</p>
+          <div class="item-tags"><span class="tag tag-popular">Popular</span></div>
+        </div>
+      </div>
+
+      <div class="menu-item">
+        <div class="menu-item-info">
+          <div class="menu-item-top">
+            <h3>Ham & Cheese Croissant</h3>
+            <span class="price">$5.50</span>
+          </div>
+          <p>Savoury croissant filled with Black Forest ham and Gruyère. Served warm.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CAKES & DESSERTS -->
+  <section class="menu-section" id="cat-cakes" data-cat="cakes">
+    <div class="menu-section-header">
+      <span class="menu-section-emoji">🎂</span>
+      <h2>Cakes & Desserts</h2>
+      <p>Slices available daily. Whole cakes available to order with 48 hrs notice.</p>
+    </div>
+    <div class="menu-grid">
+
+      <div class="menu-item">
+        <div class="menu-item-info">
+          <div class="menu-item-top">
+            <h3>Vanilla Layer Cake <small>(slice)</small></h3>
+            <span class="price">$6.50</span>
+          </div>
+          <p>Four-layer vanilla sponge with Swiss meringue buttercream and fresh berries.</p>
+        </div>
+      </div>
+
+      <div class="menu-item">
+        <div class="menu-item-info">
+          <div class="menu-item-top">
+            <h3>Dark Chocolate Torte <small>(slice)</small></h3>
+            <span class="price">$7.00</span>
+          </div>
+          <p>Dense, fudgy torte made with 70% dark chocolate and a mirror glaze finish.</p>
+          <div class="item-tags"><span class="tag tag-popular">Popular</span></div>
+        </div>
+      </div>
+
+      <div class="menu-item">
+        <div class="menu-item-info">
+          <div class="menu-item-top">
+            <h3>Lemon Tart</h3>
+            <span class="price">$5.50</span>
+          </div>
+          <p>Buttery shortcrust pastry shell filled with sharp lemon curd and torched meringue.</p>
+        </div>
+      </div>
+
+      <div class="menu-item">
+        <div class="menu-item-info">
+          <div class="menu-item-top">
+            <h3>Chocolate Éclair</h3>
+            <span class="price">$4.50</span>
+          </div>
+          <p>Choux pastry filled with vanilla pastry cream, topped with dark chocolate glaze.</p>
+        </div>
+      </div>
+
+      <div class="menu-item">
+        <div class="menu-item-info">
+          <div class="menu-item-top">
+            <h3>Custom Celebration Cake</h3>
+            <span class="price">From $65</span>
+          </div>
+          <p>Fully custom cakes for birthdays, weddings, and events. Contact us to discuss flavours, design, and sizing. 48 hr minimum notice required.</p>
+          <div class="item-tags"><span class="tag tag-custom">Custom Order</span></div>
+        </div>
+      </div>
+
+      <div class="menu-item">
+        <div class="menu-item-info">
+          <div class="menu-item-top">
+            <h3>Tiramisu <small>(slice)</small></h3>
+            <span class="price">$7.50</span>
+          </div>
+          <p>Classic Italian tiramisu layered with espresso-soaked ladyfingers and mascarpone cream.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- COOKIES & TREATS -->
+  <section class="menu-section" id="cat-cookies" data-cat="cookies">
+    <div class="menu-section-header">
+      <span class="menu-section-emoji">🍪</span>
+      <h2>Cookies & Treats</h2>
+      <p>Baked in small batches throughout the day. Available individually or by the dozen.</p>
+    </div>
+    <div class="menu-grid">
+
+      <div class="menu-item">
+        <div class="menu-item-info">
+          <div class="menu-item-top">
+            <h3>Chocolate Chip Cookie</h3>
+            <span class="price">$2.75 / $28 doz</span>
+          </div>
+          <p>Brown butter cookie loaded with dark chocolate chunks. Crispy edges, chewy centre.</p>
+          <div class="item-tags"><span class="tag tag-popular">Popular</span></div>
+        </div>
+      </div>
+
+      <div class="menu-item">
+        <div class="menu-item-info">
+          <div class="menu-item-top">
+            <h3>French Macaron</h3>
+            <span class="price">$2.50 / $27 doz</span>
+          </div>
+          <p>Delicate almond meringue shells with ganache or buttercream filling. Flavours rotate weekly.</p>
+        </div>
+      </div>
+
+      <div class="menu-item">
+        <div class="menu-item-info">
+          <div class="menu-item-top">
+            <h3>Shortbread</h3>
+            <span class="price">$2.25 / $24 doz</span>
+          </div>
+          <p>Classic Scottish shortbread — buttery, crumbly, and melt-in-your-mouth. Plain or with icing.</p>
+          <div class="item-tags"><span class="tag tag-vegan">Veg</span></div>
+        </div>
+      </div>
+
+      <div class="menu-item">
+        <div class="menu-item-info">
+          <div class="menu-item-top">
+            <h3>Oat & Raisin Cookie</h3>
+            <span class="price">$2.50 / $26 doz</span>
+          </div>
+          <p>Hearty, chewy oat cookie with plump raisins and a hint of cinnamon.</p>
+        </div>
+      </div>
+
+      <div class="menu-item">
+        <div class="menu-item-info">
+          <div class="menu-item-top">
+            <h3>Brownie</h3>
+            <span class="price">$4.00</span>
+          </div>
+          <p>Fudgy, rich chocolate brownie with a crinkle top. Optional walnut add-in.</p>
+          <div class="item-tags"><span class="tag tag-popular">Popular</span></div>
+        </div>
+      </div>
+
+      <div class="menu-item">
+        <div class="menu-item-info">
+          <div class="menu-item-top">
+            <h3>Mixed Cookie Box</h3>
+            <span class="price">$22.00</span>
+          </div>
+          <p>A curated box of 10 assorted cookies — great for gifting or events. Ask about custom selections.</p>
+          <div class="item-tags"><span class="tag tag-custom">Custom Order</span></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- DRINKS -->
+  <section class="menu-section" id="cat-drinks" data-cat="drinks">
+    <div class="menu-section-header">
+      <span class="menu-section-emoji">☕</span>
+      <h2>Drinks</h2>
+      <p>Simple, quality drinks to pair with your order.</p>
+    </div>
+    <div class="menu-grid">
+
+      <div class="menu-item">
+        <div class="menu-item-info">
+          <div class="menu-item-top">
+            <h3>Espresso</h3>
+            <span class="price">$2.75</span>
+          </div>
+          <p>Single or double shot of our house espresso blend. Rich and smooth.</p>
+        </div>
+      </div>
+
+      <div class="menu-item">
+        <div class="menu-item-info">
+          <div class="menu-item-top">
+            <h3>Flat White</h3>
+            <span class="price">$4.50</span>
+          </div>
+          <p>Double ristretto with steamed whole milk. Velvety and strong.</p>
+        </div>
+      </div>
+
+      <div class="menu-item">
+        <div class="menu-item-info">
+          <div class="menu-item-top">
+            <h3>Latte</h3>
+            <span class="price">$5.00</span>
+          </div>
+          <p>Espresso with steamed milk. Available hot or iced. Oat milk available.</p>
+        </div>
+      </div>
+
+      <div class="menu-item">
+        <div class="menu-item-info">
+          <div class="menu-item-top">
+            <h3>Drip Coffee</h3>
+            <span class="price">$3.00</span>
+          </div>
+          <p>House blend, brewed fresh every hour. Regular or decaf.</p>
+        </div>
+      </div>
+
+      <div class="menu-item">
+        <div class="menu-item-info">
+          <div class="menu-item-top">
+            <h3>Chai Latte</h3>
+            <span class="price">$5.00</span>
+          </div>
+          <p>House-made chai concentrate with steamed milk. Warm and spiced.</p>
+        </div>
+      </div>
+
+      <div class="menu-item">
+        <div class="menu-item-info">
+          <div class="menu-item-top">
+            <h3>Hot Chocolate</h3>
+            <span class="price">$4.75</span>
+          </div>
+          <p>Made with real melted chocolate and steamed milk. Topped with whipped cream.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<!-- ════ ORDER NOTE ════ -->
+<div class="order-note">
+  <div class="order-note-inner">
+    <div>
+      <h3>Want to place an order?</h3>
+      <p>Call us or send an email — we handle custom and bulk orders for pickup.</p>
+    </div>
+    <div class="order-note-btns">
+      <a href="tel:+19055550199" class="btn btn-primary">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.18 2 2 0 0 1 3.62 1h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 5.46 5.46l1.02-.98a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 21 16.92z"/></svg>
+        (905) 555-0199
+      </a>
+      <a href="/cdn-cgi/l/email-protection#167e737a7a795674777d7372746f7c6365627f7873387577" class="btn btn-outline-dark">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        Email Us
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ════ FOOTER ════ -->
+<footer id="contact">
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <h2>Baked By <span>Justine</span></h2>
+      <p>Crafting exceptional baked goods since 1999. Quality, tradition, and passion in every bite. Proudly serving Hamilton, Ontario.</p>
+      <div class="social-row">
+        <a href="#" class="social-btn" aria-label="Facebook">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+        </a>
+        <a href="#" class="social-btn" aria-label="Instagram">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        </a>
+        <a href="#" class="social-btn" aria-label="Twitter/X">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Quick Links</h4>
+      <ul>
+        <li><a href="index.html#story">About Us</a></li>
+        <li><a href="index.html#specialties">Our Products</a></li>
+        <li><a href="menu.html">Full Menu</a></li>
+        <li><a href="index.html#contact">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Visit Us</h4>
+      <ul>
+        <li><a href="#">123 Bread Street</a></li>
+        <li><a href="#">Hamilton, ON L8P 2A4</a></li>
+        <li><a href="tel:+19055550199">(905) 555-0199</a></li>
+        <li><a href="/cdn-cgi/l/email-protection#7d15181111123d1f1c1618191f0417080e09141318531e1c"><span class="__cf_email__" data-cfemail="b8d0ddd4d4d7f8dad9d3dddcdac1d2cdcbccd1d6dd96dbd9">[email&#160;protected]</span></a></li>
+        <li><a href="#">Mon–Sat: 7am – 6pm</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Baked By Justine. All rights reserved.</span>
+    <div class="footer-links">
+    

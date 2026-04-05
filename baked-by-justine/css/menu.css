@@ -1,0 +1,276 @@
+/* ============================================================
+   BAKED BY JUSTINE — menu.css
+   Styles specific to menu.html only
+   ============================================================ */
+
+/* ────────────────────────────
+   MENU HERO
+──────────────────────────── */
+.menu-hero {
+  position: relative;
+  padding: clamp(5rem, 10vw, 9rem) clamp(1.5rem, 5vw, 5rem) clamp(4rem, 7vw, 7rem);
+  background: var(--dark);
+  overflow: hidden;
+  text-align: center;
+}
+.menu-hero-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 80% at 50% 50%, rgba(201,125,64,.20) 0%, transparent 65%),
+    linear-gradient(160deg, #2c1a0e 0%, #3d2412 50%, #1e1008 100%);
+}
+.menu-hero-content {
+  position: relative;
+  z-index: 2;
+}
+.menu-hero-content h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2.4rem, 6vw, 4.5rem);
+  font-weight: 700;
+  color: var(--white);
+  line-height: 1.08;
+  margin: .5rem 0 1rem;
+  animation: fadeUp .7s .1s both;
+}
+.menu-hero-content h1 em {
+  font-style: italic;
+  color: var(--accent2);
+}
+.menu-hero-content p {
+  font-size: 1rem;
+  color: rgba(255,255,255,.65);
+  max-width: 440px;
+  margin: 0 auto;
+  line-height: 1.7;
+  animation: fadeUp .7s .3s both;
+}
+.menu-hero-content .section-tag {
+  animation: fadeUp .7s 0s both;
+}
+
+/* ────────────────────────────
+   CATEGORY TABS
+──────────────────────────── */
+.menu-tabs-wrap {
+  position: sticky;
+  top: 70px;
+  z-index: 50;
+  background: rgba(253,248,242,.96);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--tan);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.menu-tabs-wrap::-webkit-scrollbar { display: none; }
+
+.menu-tabs {
+  display: flex;
+  gap: 0;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 clamp(1.5rem, 5vw, 5rem);
+}
+.tab-btn {
+  padding: 1rem 1.4rem;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  font-family: 'Lato', sans-serif;
+  font-size: .82rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all .2s;
+  margin-bottom: -1px;
+}
+.tab-btn:hover { color: var(--accent); }
+.tab-btn.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+/* ────────────────────────────
+   MENU MAIN AREA
+──────────────────────────── */
+.menu-main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: clamp(2.5rem, 5vw, 4rem) clamp(1.5rem, 5vw, 5rem);
+  display: flex;
+  flex-direction: column;
+  gap: 4rem;
+}
+
+.menu-section { transition: opacity .3s; }
+.menu-section.hidden { display: none; }
+
+/* Section Header */
+.menu-section-header {
+  display: flex;
+  flex-direction: column;
+  gap: .4rem;
+  margin-bottom: 1.8rem;
+  padding-bottom: 1.2rem;
+  border-bottom: 2px solid var(--tan);
+}
+.menu-section-emoji {
+  font-size: 1.8rem;
+  line-height: 1;
+}
+.menu-section-header h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-weight: 700;
+  color: var(--dark);
+}
+.menu-section-header p {
+  font-size: .88rem;
+  color: var(--muted);
+}
+
+/* Menu Grid */
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+/* Menu Item Card */
+.menu-item {
+  background: var(--white);
+  border: 1px solid var(--tan);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: box-shadow .25s, transform .25s;
+}
+.menu-item:hover {
+  box-shadow: var(--shadow);
+  transform: translateY(-3px);
+}
+.menu-item-info {
+  padding: 1.4rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  height: 100%;
+}
+.menu-item-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.menu-item-top h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--dark);
+  line-height: 1.3;
+}
+.menu-item-top h3 small {
+  font-family: 'Lato', sans-serif;
+  font-size: .72rem;
+  font-weight: 400;
+  color: var(--muted);
+}
+.price {
+  font-size: .95rem;
+  font-weight: 700;
+  color: var(--accent);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.menu-item-info > p {
+  font-size: .85rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+/* Item Tags */
+.item-tags {
+  display: flex;
+  gap: .4rem;
+  flex-wrap: wrap;
+  margin-top: .3rem;
+}
+.tag {
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  padding: .2rem .6rem;
+  border-radius: 50px;
+}
+.tag-popular {
+  background: rgba(201,125,64,.12);
+  color: var(--accent);
+  border: 1px solid rgba(201,125,64,.25);
+}
+.tag-vegan {
+  background: rgba(100,155,85,.10);
+  color: #4a8a40;
+  border: 1px solid rgba(100,155,85,.2);
+}
+.tag-custom {
+  background: rgba(44,26,14,.07);
+  color: var(--brown);
+  border: 1px solid var(--tan);
+}
+
+/* ────────────────────────────
+   ORDER NOTE BANNER
+──────────────────────────── */
+.order-note {
+  background: var(--dark);
+  padding: clamp(2.5rem, 5vw, 4rem) clamp(1.5rem, 5vw, 5rem);
+}
+.order-note-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+.order-note h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: .4rem;
+}
+.order-note p {
+  color: rgba(255,255,255,.6);
+  font-size: .9rem;
+}
+.order-note-btns {
+  display: flex;
+  gap: 1rem;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+/* active nav state */
+.active-nav {
+  pointer-events: none;
+  opacity: .85;
+}
+
+/* ────────────────────────────
+   RESPONSIVE — MENU PAGE
+──────────────────────────── */
+@media (max-width: 900px) {
+  .menu-grid { grid-template-columns: repeat(2, 1fr); }
+  .order-note-inner { flex-direction: column; align-items: flex-start; }
+}
+
+@media (max-width: 600px) {
+  .menu-grid { grid-template-columns: 1fr; }
+  .menu-tabs { gap: 0; }
+  .tab-btn { padding: .85rem 1rem; font-size: .76rem; }
+}

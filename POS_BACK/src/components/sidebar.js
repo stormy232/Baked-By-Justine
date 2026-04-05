@@ -14,6 +14,7 @@ export function sideButton(label, iconClass, onClick) {
   text.textContent = label;
 
   button.append(icon, text);
+  button.addEventListener("click", onClick);
   return button;
 }
 
@@ -36,7 +37,7 @@ userStatus.textContent = Status;
 
 titleDiv.append(userTitle, userStatus);
 containerDiv.append(titleDiv);
-
+document.addEventListener("click",pageLoad);
 return containerDiv;
 }
 export function sideBar(){

@@ -1,9 +1,14 @@
 <?php
+header('Content-Type: application/json');
+// Parse without sections
+ini_set('display_errors', '0');
+$ini_array = parse_ini_file("db.ini");
 try {
-  $dbh = new PDO("mysql:host=localhost;dbname=DB", "USERNAME", "PASSWORD");
+  $dbh = new PDO("mysql:host={$ini_array["db_url"]};dbname={$ini_array["db_name"]}", "{$ini_array["db_user"]}", "{$ini_array["db_pass"]}");
 } catch (PDOException $e) {
   http_response_code(500);
   echo json_encode(["status" => "Error: Initalizing Database"]);
+  exit;
 }
 
 switch ($_SERVER["REQUEST_METHOD"]) {
@@ -97,7 +102,7 @@ function handlePostItem($dbh)
     echo json_encode(["error" => ["Invalid Argument Passed In"]]);
     exit;
   }
-  $target_dir = "uploads/";
+  $target_dir = $ini_array["img_path"];
   checkfile($target_dir);
 
   $UPLOAD_STATEMENT = "INSERT INTO products (name, price, quantity, description, discount, image_link, category) VALUES (?, ?, ?, ?, ?, ?, ?)";

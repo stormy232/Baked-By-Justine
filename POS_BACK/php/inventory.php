@@ -1,13 +1,19 @@
 <?php
-header('Content-Type: application/json');
+// Allow any origin to access this resource
+header("Access-Control-Allow-Origin: *");
+// (Optional) Allow specific HTTP methods
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+// (Optional) Allow specific headers from the frontend
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
 // Parse without sections
-ini_set('display_errors', '0');
-$ini_array = parse_ini_file("db.ini");
+header('Content-Type: application/json');
+require_once __DIR__ . "/config.php";
 try {
-  $dbh = new PDO("mysql:host={$ini_array["db_url"]};dbname={$ini_array["db_name"]}", "{$ini_array["db_user"]}", "{$ini_array["db_pass"]}");
+  echo $config["db_pass"];
+  $dbh = new PDO("mysql:host={$config["db_url"]};dbname={$config["db_name"]}", "{$config["db_user"]}", "{$config["db_pass"]}");
 } catch (PDOException $e) {
   http_response_code(500);
-  echo json_encode(["status" => "Error: Initalizing Database"]);
+  echo json_encode(["status" => "Error:" . $e->getMessage()]);
   exit;
 }
 
@@ -19,7 +25,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
     handleGetItem($dbh);
     break;
   case "POST":
-    handlePostItem($dbh, $ini_array["img_path"]);
+    handlePostItem($dbh, $config["img_path"]);
     break;
 };
 
@@ -78,7 +84,7 @@ function checkfile($target_dir)
     // if everything is ok, try to upload file
   } else {
     if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
-      echo json_encode(["success" => "File has been succesfully uploaded"]);
+      // echo json_encode(["success" => "File has been succesfully uploaded"]);
     } else {
       http_response_code(500);
       echo json_encode(["error" => "Server had an Issue Processing Image upload"]);
@@ -98,6 +104,7 @@ function handlePostItem($dbh, $target_dir)
   $category = filter_input(INPUT_POST, "category", FILTER_SANITIZE_SPECIAL_CHARS);
 
   if (($name === null || $price === null || $quantity === null || $description === null || $category === null || $discount === null)) {
+    echo [$name, $price, $quantity, $description, $discount, $category];
     http_response_code(400);
     echo json_encode(["error" => ["Invalid Argument Passed In"]]);
     exit;
@@ -112,8 +119,8 @@ function handlePostItem($dbh, $target_dir)
     echo json_encode(["error" => ["Server was unable to update database"]]);
     exit;
   } else {
-    http_response_code(201);
-    echo json_encode(["status" => "success: 201",]);
+    http_response_code(200);
+    echo json_encode(["status" => "success: 200",]);
   }
 }
 

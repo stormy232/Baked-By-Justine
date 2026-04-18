@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS delivery (
     order_id INT AUTO_INCREMENT PRIMARY KEY,
     customer_email VARCHAR(255) NOT NULL,
-    order_status ENUM('pending', 'preparing', 'shipped', 'delivered') DEFAULT 'pending',
+    order_status ENUM('pending', 'preparing', 'finished') DEFAULT 'pending',
     est_prep_time VARCHAR(100), -- e.g., "30 mins"
     total_price DECIMAL(10, 2) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

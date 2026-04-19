@@ -7,7 +7,6 @@
     <title>Your Order &mdash; Baked By Justine</title>
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/order.css">
-    <script src="https://js.stripe.com/v3/"></script>
 </head>
 
 <body>
@@ -121,13 +120,10 @@
                     <span class="section-title">Payment</span>
                 </div>
                 <div class="section-body">
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label class="form-label">Card Details</label>
-                        <div class="stripe-card-wrapper" id="stripe-card-wrapper">
-                            <div id="card-element"></div>
-                        </div>
-                        <div class="field-error" id="stripe-err"></div>
-                    </div>
+                    <p style="font-size:14px;color:var(--text-soft);line-height:1.6;">
+                        Clicking Place Order will redirect you to Stripe's secure payment page.
+                        You will be brought back here once your payment is complete.
+                    </p>
                 </div>
             </div>
 
@@ -189,37 +185,7 @@
     <script src="js/products_cart.js"></script>
     <script src="js/order.js"></script>
 
-    <script>
-        var stripe = Stripe('pk_test_YOUR_PUBLISHABLE_KEY_HERE');
-        var elements = stripe.elements();
-        var cardElement = elements.create('card', {
-            style: {
-                base: {
-                    fontFamily: 'Inter, sans-serif',
-                    fontSize: '14px',
-                    color: '#2b1a0e',
-                    '::placeholder': { color: '#9a7d5f' }
-                }
-            }
-        });
-        cardElement.mount('#card-element');
-        cardElement.on('focus', function () {
-            document.getElementById('stripe-card-wrapper').classList.add('focused');
-        });
-        cardElement.on('blur', function () {
-            document.getElementById('stripe-card-wrapper').classList.remove('focused');
-        });
-        cardElement.on('change', function (event) {
-            var errEl = document.getElementById('stripe-err');
-            if (event.error) {
-                errEl.textContent = event.error.message;
-                errEl.classList.add('visible');
-            } else {
-                errEl.textContent = '';
-                errEl.classList.remove('visible');
-            }
-        });
-    </script>
+
 </body>
 
 </html>

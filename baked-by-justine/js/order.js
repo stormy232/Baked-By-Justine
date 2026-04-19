@@ -290,74 +290,42 @@ function submitOrder() {
         return;
     }
 
-    var email = document.getElementById('email').value.trim();
+    var email    = document.getElementById('email').value.trim();
     var comments = document.getElementById('comments').value.trim();
-    var btn = document.getElementById('submit-btn');
+    var btn      = document.getElementById('submit-btn');
 
-    btn.disabled = true;
-    btn.textContent = 'Placing order...';
+    btn.disabled    = true;
+    btn.textContent = 'Redirecting to payment...';
 
-    fetch('api/create_payment_intent.php', {
-        method: 'POST',
+    // Store comments and prepTime so confirm.html can submit the order after payment
+    sessionStorage.setItem('bbj_pending_comments', comments);
+    sessionStorage.setItem('bbj_pending_prep',     chosenPrepTime);
+
+    fetch('api/create_checkout_session.php', {
+        method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+        body:    JSON.stringify({
             customer_email: email,
+            est_prep_time:  chosenPrepTime
         })
     })
-        .then(function (res) {
-            return res.json().then(function (data) {
-                if (!res.ok) throw new Error(data.error || 'Order could not be submitted');
-                return data;
-            });
-        })
-
-        .then(function (data) {
-            return stripe.confirmCardPayment(data.clientSecret, {
-                payment_method: {
-                    card: cardElement,
-                    billing_details: { email: email }
-                }
-            });
-        })
-
-        .then(function (result) {
-            if (result.error) throw new Error(result.error.message);
-            return fetch('api/submit_order.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    customer_email: email,
-                    est_prep_time: chosenPrepTime,
-                    comments: comments
-                })
-            });
-        })
-
-        .then(function (res) {
-            return res.json().then(function (data) {
-                if (!res.ok) throw new Error(data.error || 'Order submission failed');
-                return data;
-            });
-        })
-
-        .then(function (data) {
-            var payload = {
-                customer: { email: email, comments: comments },
-                orderId: data.order_id,
-                total: data.total,
-                prepTime: chosenPrepTime,
-                submittedAt: data.created_at || new Date().toISOString()
-            };
-            sessionStorage.setItem('bbj_order_payload', JSON.stringify(payload));
-            window.location.href = 'confirm.html';
-        })
-        .catch(function (err) {
-            btn.disabled = false;
-            btn.textContent = 'Place Order';
-            document.getElementById('top-alert').classList.add('visible');
-            document.getElementById('top-alert-msg').textContent = err.message;
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+    .then(function(res) {
+        return res.json().then(function(data) {
+            if (!res.ok) throw new Error(data.error || 'Could not start checkout');
+            return data;
         });
+    })
+    .then(function(data) {
+        // Redirect to Stripe Checkout page
+        window.location.href = data.url;
+    })
+    .catch(function(err) {
+        btn.disabled    = false;
+        btn.textContent = 'Place Order';
+        document.getElementById('top-alert').classList.add('visible');
+        document.getElementById('top-alert-msg').textContent = err.message;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
 }
 
 function loadOrderHistory() {
@@ -430,27 +398,87 @@ function placeAnother() {
 }
 
 function initConfirmPage() {
-    var raw = sessionStorage.getItem('bbj_order_payload');
-    if (!raw) { window.location.href = 'order.html'; return; }
+    var confirmIdEl    = document.getElementById('confirm-id');
+    var confirmTableEl = document.getElementById('confirm-table');
 
-    var payload = JSON.parse(raw);
+    // Check if Stripe redirected here with ?session_id=...&email=...&prep=...
+    var params   = new URLSearchParams(window.location.search);
+    var email    = params.get('email');
+    var prepTime = params.get('prep') || sessionStorage.getItem('bbj_pending_prep') || '20-30 minutes';
+    var comments = sessionStorage.getItem('bbj_pending_comments') || '';
 
-    document.getElementById('confirm-id').textContent = '#' + payload.orderId;
+    if (email) {
+        // Came from Stripe Checkout — submit the order to the DB now
+        if (confirmIdEl)    confirmIdEl.textContent    = 'Processing...';
+        if (confirmTableEl) confirmTableEl.innerHTML   = '<tr><td colspan="2" style="text-align:center;padding:16px;">Finalising your order...</td></tr>';
 
-    var date = new Date(payload.submittedAt).toLocaleString('en-CA', {
-        month: 'short', day: 'numeric',
-        hour: '2-digit', minute: '2-digit', hour12: true
-    });
+        fetch('api/submit_order.php', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({
+                customer_email: email,
+                est_prep_time:  prepTime,
+                comments:       comments
+            })
+        })
+        .then(function(res) {
+            return res.json().then(function(data) {
+                if (!res.ok) throw new Error(data.error || 'Order submission failed');
+                return data;
+            });
+        })
+        .then(function(data) {
+            sessionStorage.removeItem('bbj_pending_comments');
+            sessionStorage.removeItem('bbj_pending_prep');
 
-    var rows = '';
-    rows += '<tr><td>Email</td><td>' + payload.customer.email + '</td></tr>';
-    rows += '<tr><td>Pickup window</td><td>' + payload.prepTime + '</td></tr>';
-    rows += '<tr><td>Status</td><td>Pending</td></tr>';
-    rows += '<tr><td>Placed</td><td>' + date + '</td></tr>';
-    rows += '<tr><td><strong>Total</strong></td><td><strong>$' + payload.total.toFixed(2) + '</strong></td></tr>';
+            if (confirmIdEl) confirmIdEl.textContent = '#' + data.order_id;
 
-    document.getElementById('confirm-table').innerHTML = rows;
-    sessionStorage.removeItem('bbj_order_payload');
+            var date = new Date(data.created_at).toLocaleString('en-CA', {
+                month: 'short', day: 'numeric',
+                hour: '2-digit', minute: '2-digit', hour12: true
+            });
+
+            var rows = '';
+            rows += '<tr><td>Email</td><td>' + email + '</td></tr>';
+            rows += '<tr><td>Pickup window</td><td>' + prepTime + '</td></tr>';
+            rows += '<tr><td>Status</td><td>Pending</td></tr>';
+            rows += '<tr><td>Placed</td><td>' + date + '</td></tr>';
+            rows += '<tr><td><strong>Total</strong></td><td><strong>$' + data.total.toFixed(2) + '</strong></td></tr>';
+
+            if (confirmTableEl) confirmTableEl.innerHTML = rows;
+
+            // Clean the URL
+            window.history.replaceState({}, document.title, 'confirm.html');
+        })
+        .catch(function(err) {
+            if (confirmIdEl)    confirmIdEl.textContent  = 'Error';
+            if (confirmTableEl) confirmTableEl.innerHTML = '<tr><td colspan="2" style="color:var(--red);padding:16px;">' + err.message + '</td></tr>';
+        });
+
+    } else {
+        // Fallback: came from sessionStorage payload (old flow)
+        var raw = sessionStorage.getItem('bbj_order_payload');
+        if (!raw) { window.location.href = 'order.html'; return; }
+
+        var payload = JSON.parse(raw);
+
+        if (confirmIdEl) confirmIdEl.textContent = '#' + payload.orderId;
+
+        var date = new Date(payload.submittedAt).toLocaleString('en-CA', {
+            month: 'short', day: 'numeric',
+            hour: '2-digit', minute: '2-digit', hour12: true
+        });
+
+        var rows = '';
+        rows += '<tr><td>Email</td><td>' + payload.customer.email + '</td></tr>';
+        rows += '<tr><td>Pickup window</td><td>' + payload.prepTime + '</td></tr>';
+        rows += '<tr><td>Status</td><td>Pending</td></tr>';
+        rows += '<tr><td>Placed</td><td>' + date + '</td></tr>';
+        rows += '<tr><td><strong>Total</strong></td><td><strong>$' + payload.total.toFixed(2) + '</strong></td></tr>';
+
+        if (confirmTableEl) confirmTableEl.innerHTML = rows;
+        sessionStorage.removeItem('bbj_order_payload');
+    }
 }
 
 
@@ -474,11 +502,13 @@ function toggleMobileNav() {
 
 document.addEventListener('DOMContentLoaded', function () {
 
+    // ── Confirm page ──
     if (document.getElementById('confirm-id')) {
         initConfirmPage();
         return;
     }
 
+    // ── Order page ──
     var emailInput = document.getElementById('email');
 
     var stored = Cart.getEmail();

@@ -23,3 +23,23 @@ export async function getInventory(category = "All", searchTerm = "", limit = 50
     }
 }
 
+export function removeInventory(inventoryId){
+  fetch(url+`?id=${id}` , {
+    method: "DELETE" 
+  })
+  .then(reponse => if(!response == 200){console.error("ISSUE");} return response.json())
+  .catch(error => console.error(`error: ${error}`); 
+}
+
+export function updateInventory(formData) {
+fetch(url, {
+    method: "PUT",
+    body: formData, //
+  })
+.then(response => {
+  if (!response.ok) throw new Error('Network response was not ok'); //
+  return response.json();
+})
+.catch(error => console.error('Error:', error)); //
+}
+

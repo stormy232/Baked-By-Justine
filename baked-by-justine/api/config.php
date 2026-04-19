@@ -1,5 +1,4 @@
 <?php
-// bad - TO BE DELETED
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'baked_by_justine'); // your database name
 define('DB_USER', 'root');           // your MySQL username

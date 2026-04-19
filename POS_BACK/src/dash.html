@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics Dashboard | Justine Bakes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Define the theme colors (teal/black) */
+        :root { --p-color: #008080; }
+        .p-bg { background-color: var(--p-color); }
+        .p-text { color: var(--p-color); }
+    </style>
+</head>
+<body class="bg-gray-50 text-slate-900">
+
+    <div class="max-w-7xl mx-auto p-6 md:p-8">
+        
+        <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8 pb-6 border-b border-gray-100">
+            <div>
+                <h1 class="text-3xl font-bold text-slate-950">Financial Overview</h1>
+                <p class="text-gray-500 mt-1">Stripe-Only POS Analytics (CDN Version)</p>
+            </div>
+            <div class="flex items-center gap-2 bg-white p-2 rounded-lg border border-gray-100 shadow-sm">
+                <input type="date" id="startDate" class="text-sm p-2 border border-gray-100 rounded">
+                <span class="text-gray-400">to</span>
+                <input type="date" id="endDate" class="text-sm p-2 border border-gray-100 rounded">
+                <button onclick="fetchData()" class="p-bg text-white px-4 py-2 rounded-md text-sm font-semibold hover:opacity-90">Filter</button>
+            </div>
+        </header>
+
+        <div id="loading" class="text-center py-20 text-gray-500">Loading Justine Bakes Analytics...</div>
+        <div id="error" class="hidden bg-red-50 text-red-700 p-4 rounded-lg border border-red-200 mb-8"></div>
+
+        <div id="dashboardContent" class="hidden">
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Net Sales</p>
+                    <p id="netSales" class="text-4xl font-extrabold text-green-600 mt-2">$0.00</p>
+                    <p class="text-sm text-gray-500 mt-1">Gross sales minus estimated fees.</p>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Avg. Order Value (AOV)</p>
+                    <p id="aov" class="text-4xl font-extrabold text-slate-950 mt-2">$0.00</p>
+                    <p class="text-sm text-gray-500 mt-1">Average spent per transaction.</p>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Total Orders</p>
+                    <p id="totalOrders" class="text-4xl font-extrabold p-text mt-2">0</p>
+                    <p class="text-sm text-gray-500 mt-1">Completed Stripe orders.</p>
+                </div>
+            </div>
+
+            <section class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-10">
+                <h2 class="text-lg font-semibold text-slate-950 mb-3">Stripe CA Payout Estimation</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-gray-100 pt-4 text-sm">
+                    <div>Gross Local Sales: <b id="stripeGross" class="text-slate-950">$0.00</b></div>
+                    <div>Estimated Fees (2.9% + $0.30): <b id="stripeFees" class="text-red-600">-$0.00</b></div>
+                    <div class="bg-green-50 p-2 rounded">Est. Net Payout: <b id="stripeNet" class="text-green-700 text-lg">$0.00</b></div>
+                </div>
+            </section>
+
+            <section class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                <h2 class="text-lg font-semibold text-slate-950 mb-5">Top Selling Products</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead class="text-xs text-gray-400 uppercase tracking-wider border-b border-gray-100">
+                            <tr>
+                                <th class="pb-3 px-2">Product Name</th>
+                                <th class="pb-3 px-2 text-right">Units Sold</th>
+                                <th class="pb-3 px-2 text-right">Product Revenue</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productTableBody" class="divide-y divide-gray-100">
+                            </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+    </div>
+
+    <script>
+        // Set default dates (current month) on load
+        const now = new Date();
+        document.getElementById('startDate').value = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+        document.getElementById('endDate').value = now.toISOString().split('T')[0];
+
+        // Format numbers to Canadian Currency ($1,234.56)
+        const formatCAD = (num) => new Intl.NumberFormat('en-CA', { style: 'currency', currency: 'CAD' }).format(num);
+
+        async function fetchData() {
+            const start = document.getElementById('startDate').value;
+            const end = document.getElementById('endDate').value;
+            
+            const loadingEl = document.getElementById('loading');
+            const dashboardEl = document.getElementById('dashboardContent');
+            const errorEl = document.getElementById('error');
+
+            loadingEl.classList.remove('hidden');
+            dashboardEl.classList.add('hidden');
+            errorEl.classList.add('hidden');
+
+            try {
+                // CALL THE PHP API
+
+                const response = await fetch(`http://cs1xd3.cas.mcmaster.ca/~randevv/Justine_Bakes/POS_BACK/api/finance/FinancialReports.php?start=${start}&end=${end}`);
+                const data = await response.json();
+
+                if (data.errors && data.errors.length > 0) {
+                    throw new Error(data.errors[0]);
+                }
+
+                // --- UPDATE UI WITH API DATA ---
+
+                // Summary Tiles
+                document.getElementById('netSales').textContent = formatCAD(data.stripe_reconciliation.estimated_net_payout);
+                document.getElementById('aov').textContent = formatCAD(data.overview_tiles.aov);
+                document.getElementById('totalOrders').textContent = data.overview_tiles.total_orders;
+
+                // Stripe Reconciliation
+                document.getElementById('stripeGross').textContent = formatCAD(data.stripe_reconciliation.total_gross);
+                document.getElementById('stripeFees').textContent = `-${formatCAD(data.stripe_reconciliation.estimated_fees)}`;
+                document.getElementById('stripeNet').textContent = formatCAD(data.stripe_reconciliation.estimated_net_payout);
+
+                // Top Products Table
+                const tableBody = document.getElementById('productTableBody');
+                tableBody.innerHTML = ''; // Clear old rows
+                
+                if (data.sales_by_product.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="3" class="text-center py-6 text-gray-400">No sales recorded in this period.</td></tr>';
+                } else {
+                    data.sales_by_product.forEach(product => {
+                        const row = `
+                            <tr>
+                                <td class="py-4 px-2 font-medium text-slate-950">${product.name}</td>
+                                <td class="py-4 px-2 text-right">${product.units_sold}</td>
+                                <td class="py-4 px-2 text-right font-semibold">${formatCAD(product.product_revenue)}</td>
+                            </tr>
+                        `;
+                        tableBody.insertAdjacentHTML('beforeend', row);
+                    });
+                }
+
+                // Show the dashboard, hide loading
+                loadingEl.classList.add('hidden');
+                dashboardEl.classList.remove('hidden');
+
+            } catch (err) {
+                // Handle errors gracefully
+                loadingEl.classList.add('hidden');
+                errorEl.textContent = `Error loading dashboard: ${err.message}`;
+                errorEl.classList.remove('hidden');
+            }
+        }
+
+        // Run the initial fetch when the page loads
+        fetchData();
+    </script>
+</body>
+</html>

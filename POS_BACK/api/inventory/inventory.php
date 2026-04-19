@@ -8,14 +8,7 @@ header("Access-Control-Allow-Headers: Content-Type, Authorization");
 // Parse without sections
 header('Content-Type: application/json');
 require_once __DIR__ . "/config.php";
-try {
-  echo $config["db_pass"];
-  $dbh = new PDO("mysql:host={$config["db_url"]};dbname={$config["db_name"]}", "{$config["db_user"]}", "{$config["db_pass"]}");
-} catch (PDOException $e) {
-  http_response_code(500);
-  echo json_encode(["status" => "Error:" . $e->getMessage()]);
-  exit;
-}
+$dbh = createPDO();
 
 switch ($_SERVER["REQUEST_METHOD"]) {
   case "DELETE":
@@ -25,10 +18,11 @@ switch ($_SERVER["REQUEST_METHOD"]) {
     handleGetItem($dbh);
     break;
   case "POST":
+    /** @var array $config Defined in config.php */
     handlePostItem($dbh, $config["img_path"]);
     break;
   case "UPDATE":
-    handleUpdateItem($dbn, $config["img_path"]);
+    handleUpdateItem($dbh, $config["img_path"]);
     break;
 };
 
@@ -116,7 +110,7 @@ function handlePostItem($dbh, $target_dir)
 
   $UPLOAD_STATEMENT = "INSERT INTO products (name, price, quantity, description, discount, image_link, category) VALUES (?, ?, ?, ?, ?, ?, ?)";
   $uploader = $dbh->prepare($UPLOAD_STATEMENT);
-  $success = $uploader->execute([$name, $price, $quantity, $description, $discount, $target_dir . basename($_FILES["fileToUpload"]["name"]), $category]);
+  $success = $uploader->execute([$name, $price, $quantity, $description, $discount, $config["remoteURL"] . basename($_FILES["fileToUpload"]["name"]), $category]);
   if (!$success) {
     http_response_code(500);
     echo json_encode(["error" => ["Server was unable to update database"]]);
@@ -204,19 +198,31 @@ function removeItem($dbh)
   }
 }
 
-function handleUpdateItems($dbh, $image_path)
+function handleUpdateItem($dbh, $image_path)
 {
-    // 1. Get the target Product ID
-    $id = filter_input(INPUT_POST, "product_id", FILTER_VALIDATE_INT);
+// 1. Initialize and parse the PUT stream
+$putData = [];
+parse_str(file_get_contents("php://input"), $putData);
 
-    // 2. Filter all incoming fields (matches your preferred style)
-    $name = filter_input(INPUT_POST, "name");
-    $price = filter_input(INPUT_POST, "price", FILTER_VALIDATE_FLOAT);
-    $quantity = filter_input(INPUT_POST, "quantity", FILTER_VALIDATE_INT);
-    $description = filter_input(INPUT_POST, "description", FILTER_SANITIZE_SPECIAL_CHARS);
-    $discount = filter_input(INPUT_POST, "discount_percent", FILTER_VALIDATE_FLOAT); // Matches your SQL 'discount_percent'
-    $category = filter_input(INPUT_POST, "category", FILTER_SANITIZE_SPECIAL_CHARS);
+// 2. Filter the Product ID
+$id = filter_var($putData["product_id"] ?? null, FILTER_VALIDATE_INT) ?: null;
 
+// 3. Filter incoming fields - setting to null if filter_var returns false
+$name = filter_var($putData["name"] ?? null, FILTER_SANITIZE_SPECIAL_CHARS) ?: null;
+
+// For numbers, we check '!== false' so that 0 remains 0 and isn't turned into null
+$f_price = filter_var($putData["price"] ?? null, FILTER_VALIDATE_FLOAT);
+$price = ($f_price !== false) ? $f_price : null;
+
+$f_quantity = filter_var($putData["quantity"] ?? null, FILTER_VALIDATE_INT);
+$quantity = ($f_quantity !== false) ? $f_quantity : null;
+
+$description = filter_var($putData["description"] ?? null, FILTER_SANITIZE_SPECIAL_CHARS) ?: null;
+
+$f_discount = filter_var($putData["discount_percent"] ?? null, FILTER_VALIDATE_FLOAT);
+$discount = ($f_discount !== false) ? $f_discount : null;
+
+$category = filter_var($putData["category"] ?? null, FILTER_SANITIZE_SPECIAL_CHARS) ?: null;
     // 3. Strict Validation
     if ($id === null || $name === null || $price === null || $quantity === null || $description === null || $category === null || $discount === null) {
         http_response_code(400);
@@ -229,26 +235,21 @@ function handleUpdateItems($dbh, $image_path)
 
     // 4. Handle Image Upload (Optional for updates)
     // We check if a new file was actually sent; otherwise, we keep the old path
+$imagePath = null;
 if (isset($_FILES["fileToUpload"]) && $_FILES["fileToUpload"]["error"] === UPLOAD_ERR_OK) {
     checkfile($image_path);
+    $imagePath = $config["remoteURL"] . basename($_FILES["fileToUpload"]["name"]);
 }
 
-    // 5. The Update Statement
-    // If no new image was uploaded, we'll need to handle the query slightly differently 
-    // or just pass the existing image link from the frontend.
-    $sql = "UPDATE products 
-            SET name = ?, price = ?, quantity = ?, description = ?, discount_percent = ?, category = ? 
-            WHERE product_id = ?";
-    
-    $params = [$name, $price, $quantity, $description, $discount, $category, $id];
-
-    // If an image was uploaded, we append it to the SQL
-    if ($imagePath) {
-        $sql = "UPDATE products 
-                SET name = ?, price = ?, quantity = ?, description = ?, discount_percent = ?, category = ?, image_link = ? 
-                WHERE product_id = ?";
+$sql = "UPDATE products SET 
+            name = COALESCE(?, name),
+            price = COALESCE(?, price),
+            quantity = COALESCE(?, quantity),
+            description = COALESCE(?, description),
+            discount_percent = COALESCE(?, discount_percent),
+            category = COALESCE(?, category)
+        WHERE id = ?";
         $params = [$name, $price, $quantity, $description, $discount, $category, $imagePath, $id];
-    }
 
     $stmt = $dbh->prepare($sql);
     $success = $stmt->execute($params);

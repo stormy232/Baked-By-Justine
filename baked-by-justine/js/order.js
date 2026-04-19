@@ -474,13 +474,11 @@ function toggleMobileNav() {
 
 document.addEventListener('DOMContentLoaded', function () {
 
-    // ── Confirm page ──
     if (document.getElementById('confirm-id')) {
         initConfirmPage();
         return;
     }
 
-    // ── Order page ──
     var emailInput = document.getElementById('email');
 
     var stored = Cart.getEmail();
@@ -488,21 +486,31 @@ document.addEventListener('DOMContentLoaded', function () {
         emailInput.value = stored;
     }
 
-    productsReady.then(function () {
-        Cart.load().then(function () {
-            renderCart();
+    fetch('api/auth.php?action=session')
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            if (data.success && data.logged_in && data.user && data.user.email) {
+                Cart.setEmail(data.user.email);
+                if (emailInput) emailInput.value = data.user.email;
+            }
+        })
+        .catch(function() {})
+        .finally(function() {
+            productsReady.then(function () {
+                Cart.load().then(function () {
+                    renderCart();
+                });
+            });
         });
-    });
-});
 
-if (emailInput) {
-    emailInput.addEventListener('blur', function () {
-        var val = emailInput.value.trim();
-        if (val && val.includes('@')) {
-            Cart.setEmail(val);
-            Cart.load().then(function () { renderCart(); });
-        }
-    });
-}
+    if (emailInput) {
+        emailInput.addEventListener('blur', function () {
+            var val = emailInput.value.trim();
+            if (val && val.includes('@')) {
+                Cart.setEmail(val);
+                Cart.load().then(function () { renderCart(); });
+            }
+        });
+    }
 
 });

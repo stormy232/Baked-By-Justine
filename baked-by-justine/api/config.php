@@ -1,8 +1,4 @@
 <?php
-// ============================================================
-// config.php — Database connection settings
-// Change these values to match YOUR database setup
-// ============================================================
 
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'bakedbyjustine'); // your database name

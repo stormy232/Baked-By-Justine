@@ -258,6 +258,16 @@
   object-fit: cover;
   display: block;
   background: var(--warm);
+  transition: transform .4s ease;
+}
+.product-card:hover .product-img {
+  transform: scale(1.04);
+}
+.product-img-wrap {
+  overflow: hidden;
+  width: 100%;
+  aspect-ratio: 4/3;
+  background: var(--warm);
 }
 /* Fallback when no image */
 .product-img-placeholder {

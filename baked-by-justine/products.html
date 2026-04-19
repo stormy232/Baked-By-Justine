@@ -9,9 +9,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="css/products.css" />
+  <link rel="stylesheet" href="css/cart.css" />
 </head>
 <body>
-
 <nav id="navbar">
   <a href="index.html" class="nav-logo">Baked By <span>Justine</span></a>
   <ul class="nav-links">
@@ -24,23 +24,20 @@
     <span></span><span></span><span></span>
   </button>
 </nav>
-
 <div class="mobile-menu" id="mobileMenu">
   <a href="index.html#story">About</a>
   <a href="index.html#specialties">Speciality</a>
   <a href="index.html#reviews">Reviews</a>
   <a href="index.html#contact">Contact</a>
 </div>
-
 <header class="products-hero">
   <div class="products-hero-bg"></div>
   <div class="products-hero-content">
     <span class="section-tag">Fresh Every Morning</span>
     <h1>Our <em>Menu</em></h1>
-    <p>Browse everything we bake. Prices, availability, and deals — all live from our kitchen.</p>
+    <p>Browse everything we bake. Prices, availability, and deals all live from our kitchen.</p>
   </div>
 </header>
-
 <div class="filter-bar-wrap">
   <div class="filter-bar">
     <div class="search-box">
@@ -52,30 +49,28 @@
     </div>
   </div>
 </div>
-
 <main class="products-main">
   <div class="state-loading" id="stateLoading">
     <div class="spinner"></div>
     <p>Loading products...</p>
   </div>
   <div class="state-empty hidden" id="stateEmpty">
-    <span>🥐</span>
+    <span>&#129360;</span>
     <h3>Nothing found</h3>
     <p>Try a different category or search term.</p>
   </div>
   <div class="state-error hidden" id="stateError">
-    <span>⚠️</span>
+    <span>&#9888;&#65039;</span>
     <h3>Could not load products</h3>
     <p id="errorMsg">Check that the PHP server is running and the database is connected.</p>
   </div>
   <div class="products-grid hidden" id="productsGrid"></div>
 </main>
-
 <div class="order-note">
   <div class="order-note-inner">
     <div>
       <h3>Want to place a custom order?</h3>
-      <p>Call us or send an email — we handle bulk orders and catering for pickup.</p>
+      <p>Call us or send an email. We handle bulk orders and catering for pickup.</p>
     </div>
     <div class="order-note-btns">
       <a href="tel:+19055550199" class="btn btn-primary">
@@ -89,7 +84,6 @@
     </div>
   </div>
 </div>
-
 <footer id="contact">
   <div class="footer-grid">
     <div class="footer-brand">
@@ -102,7 +96,7 @@
         <a href="#" class="social-btn" aria-label="Instagram">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
         </a>
-        <a href="#" class="social-btn" aria-label="Twitter/X">
+        <a href="#" class="social-btn" aria-label="Twitter">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
         </a>
       </div>
@@ -128,15 +122,16 @@
     </div>
   </div>
   <div class="footer-bottom">
-    <span>© 2026 Baked By Justine. All rights reserved.</span>
+    <span>2026 Baked By Justine. All rights reserved.</span>
     <div class="footer-links">
       <a href="#">Privacy Policy</a>
       <a href="#">Terms of Service</a>
     </div>
   </div>
 </footer>
-
 <script src="js/main.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/auth.js"></script>
 <script src="js/products.js"></script>
 </body>
 </html>

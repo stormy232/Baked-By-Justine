@@ -1,19 +1,13 @@
 <?php
 require_once __DIR__ . "/config.php";
-try {
-  $dbh = new PDO("mysql:host={$config["db_url"]};dbname={$config["db_name"]}", "{$config["db_user"]}", "{$config["db_pass"]}");
-} catch (PDOException $e) {
-  http_response_code(500);
-  echo json_encode(["status" => "Error: Initalizing Database"]);
-  exit;
-}
+$dbh = createPDO();
 
 switch ($_SERVER["REQUEST_METHOD"]) {
   case "DELETE":
     //    removeItem($dbh);
     break;
   case "GET":
-    selectOrders($dbh);
+    getOrdersWithProducts($dbh);
     break;
   case "POST":
     //   handlePostItem($dbh, $options["img_path"]);
@@ -82,8 +76,11 @@ function getOrdersWithProducts($dbh) {
 function handleUpdateDeliveryStatus($dbh)
 {
     // 1. Get the Order ID and the New Status
-    $orderId = filter_input(INPUT_POST, "order_id", FILTER_VALIDATE_INT);
-    $status = filter_input(INPUT_POST, "status", FILTER_SANITIZE_SPECIAL_CHARS);
+    $putData = [];
+    parse_str(file_get_contents("php://input"), $putData);
+
+    $orderId = filter_var($putData["order_id"] ?? null, FILTER_VALIDATE_INT) ?: null;
+    $status = filter_var($putData["status"] ?? null, FILTER_SANITIZE_SPECIAL_CHARS) ?: null;
 
     // 2. Strict Validation
     // Check if the inputs are missing
@@ -109,13 +106,13 @@ function handleUpdateDeliveryStatus($dbh)
     $sql = "SELECT cutomer_email FROM delivery WHERE order_id = ?"; 
     $stmt = $dbh->prepare($sql);
     $success = $stmt->execute($orderId);
-    $user_email = ""
+    $user_email = "";
     if($success->rowcount() > 0){
       $row = $stmt->fetch();
       $user_email = $row["user_email"];
     }
     else{
-      echo json_encode(["error" => "Couldn't Obtain SQL records"];
+      echo json_encode(["error" => "Couldn't Obtain SQL records"]);
       exit;
     }
     $sql = "UPDATE delivery SET order_status = ? WHERE order_id = ?";
@@ -139,7 +136,7 @@ function handleUpdateDeliveryStatus($dbh)
           $headers = "From: bakery@justine.com" . "\r\n" .
            "Reply-To: bakery@justine.com" . "\r\n" .
            "Content-Type: text/html; charset=UTF-8" . "\r\n";
-          if(mail($to, $subject, $message, $headers)) {
+          if(mail($user_email , $subject, $message, $headers)) {
             echo "Email sent successfully.";
           } else {
               echo "Email delivery failed.";

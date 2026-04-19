@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Justine Bakes Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 p-8">
+    <div class="max-w-5xl mx-auto">
+        <header class="flex justify-between items-center mb-8">
+            <h1 class="text-2xl font-bold text-gray-800">Bakes By Justine POS</h1>
+            <div class="flex gap-2">
+                <input type="date" id="start" class="border p-2 rounded text-sm">
+                <input type="date" id="end" class="border p-2 rounded text-sm">
+                <button onclick="loadData()" class="bg-black text-white px-4 py-2 rounded text-sm">Filter</button>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-3 gap-6 mb-8" id="tileContainer">
+            <div class="bg-white p-6 rounded-lg shadow-sm border">
+                <p class="text-gray-500 text-xs uppercase font-semibold">Total Revenue</p>
+                <h2 id="gross_sales" class="text-2xl font-bold mt-1">$0.00</h2>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-sm border">
+                <p class="text-gray-500 text-xs uppercase font-semibold">Orders</p>
+                <h2 id="total_orders" class="text-2xl font-bold mt-1">0</h2>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-sm border">
+                <p class="text-gray-500 text-xs uppercase font-semibold">Avg. Value</p>
+                <h2 id="aov" class="text-2xl font-bold mt-1">$0.00</h2>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-sm border overflow-hidden">
+            <table class="w-full text-left">
+                <thead class="bg-gray-50 border-b">
+                    <tr>
+                        <th class="px-6 py-3 text-xs font-semibold text-gray-600">Product</th>
+                        <th class="px-6 py-3 text-xs font-semibold text-gray-600">Quantity</th>
+                        <th class="px-6 py-3 text-xs font-semibold text-gray-600">Revenue</th>
+                    </tr>
+                </thead>
+                <tbody id="productBody" class="text-sm divide-y">
+                    </tbody>
+            </table>
+        </div>
+
+        <div id="errorDisplay" class="mt-4 text-red-500 text-xs italic"></div>
+    </div>
+
+    <script>
+        async function loadData() {
+            const start = document.getElementById('start').value;
+            const end = document.getElementById('end').value;
+            
+            try {
+                const res = await fetch(`http://cs1xd3.cas.mcmaster.ca/~randevv/Justine_Bakes/POS_BACK/api/finance/FinancialReports.php?start=${start}&end=${end}`);
+                const json = await res.json();
+
+                // Update Tiles
+                if (json.overview_tiles) {
+                    document.getElementById('gross_sales').innerText = `$${json.overview_tiles.gross_sales.toLocaleString()}`;
+                    document.getElementById('total_orders').innerText = json.overview_tiles.total_orders;
+                    document.getElementById('aov').innerText = `$${json.overview_tiles.aov}`;
+                }
+
+                // Update Table
+                const body = document.getElementById('productBody');
+                body.innerHTML = json.sales_by_product.map(item => `
+                    <tr>
+                        <td class="px-6 py-4 font-medium">${item.product_name}</td>
+                        <td class="px-6 py-4">${item.qty}</td>
+                        <td class="px-6 py-4">$${parseFloat(item.revenue).toFixed(2)}</td>
+                    </tr>
+                `).join('') || '<tr><td colspan="3" class="p-6 text-center text-gray-400">No data found</td></tr>';
+
+                document.getElementById('errorDisplay').innerText = json.errors.join(' | ');
+
+            } catch (e) {
+                console.error("Dashboard failed to load", e);
+            }
+        }
+
+        // Init
+        const d = new Date();
+        document.getElementById('end').value = d.toISOString().split('T')[0];
+        d.setDate(1);
+        document.getElementById('start').value = d.toISOString().split('T')[0];
+        loadData();
+    </script>
+</body>
+</html>

@@ -27,6 +27,9 @@ switch ($_SERVER["REQUEST_METHOD"]) {
   case "POST":
     handlePostItem($dbh, $config["img_path"]);
     break;
+  case "UPDATE":
+    handleUpdateItem($dbn, $config["img_path"]);
+    break;
 };
 
 
@@ -199,4 +202,63 @@ function removeItem($dbh)
     http_response_code(500);
     echo json_encode(["error" => "Delete failed"]);
   }
+}
+
+function handleUpdateItems($dbh, $image_path)
+{
+    // 1. Get the target Product ID
+    $id = filter_input(INPUT_POST, "product_id", FILTER_VALIDATE_INT);
+
+    // 2. Filter all incoming fields (matches your preferred style)
+    $name = filter_input(INPUT_POST, "name");
+    $price = filter_input(INPUT_POST, "price", FILTER_VALIDATE_FLOAT);
+    $quantity = filter_input(INPUT_POST, "quantity", FILTER_VALIDATE_INT);
+    $description = filter_input(INPUT_POST, "description", FILTER_SANITIZE_SPECIAL_CHARS);
+    $discount = filter_input(INPUT_POST, "discount_percent", FILTER_VALIDATE_FLOAT); // Matches your SQL 'discount_percent'
+    $category = filter_input(INPUT_POST, "category", FILTER_SANITIZE_SPECIAL_CHARS);
+
+    // 3. Strict Validation
+    if ($id === null || $name === null || $price === null || $quantity === null || $description === null || $category === null || $discount === null) {
+        http_response_code(400);
+        echo json_encode([
+            "error" => "Invalid Argument Passed In",
+            "received" => [$id, $name, $price, $quantity, $description, $discount, $category]
+        ]);
+        exit;
+    }
+
+    // 4. Handle Image Upload (Optional for updates)
+    // We check if a new file was actually sent; otherwise, we keep the old path
+if (isset($_FILES["fileToUpload"]) && $_FILES["fileToUpload"]["error"] === UPLOAD_ERR_OK) {
+    checkfile($image_path);
+}
+
+    // 5. The Update Statement
+    // If no new image was uploaded, we'll need to handle the query slightly differently 
+    // or just pass the existing image link from the frontend.
+    $sql = "UPDATE products 
+            SET name = ?, price = ?, quantity = ?, description = ?, discount_percent = ?, category = ? 
+            WHERE product_id = ?";
+    
+    $params = [$name, $price, $quantity, $description, $discount, $category, $id];
+
+    // If an image was uploaded, we append it to the SQL
+    if ($imagePath) {
+        $sql = "UPDATE products 
+                SET name = ?, price = ?, quantity = ?, description = ?, discount_percent = ?, category = ?, image_link = ? 
+                WHERE product_id = ?";
+        $params = [$name, $price, $quantity, $description, $discount, $category, $imagePath, $id];
+    }
+
+    $stmt = $dbh->prepare($sql);
+    $success = $stmt->execute($params);
+
+    if (!$success) {
+        http_response_code(500);
+        echo json_encode(["error" => "Server was unable to update database"]);
+        exit;
+    } else {
+        http_response_code(200);
+        echo json_encode(["status" => "success: 200"]);
+    }
 }

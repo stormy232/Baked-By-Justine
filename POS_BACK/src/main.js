@@ -11,10 +11,13 @@ window.addEventListener("load", () => {
   const buttonBar = document.getElementById("content-header");
   const content = document.getElementById("content");
 
+  const userId = localStorage.getItem('user_id');
+  const userRole = localStorage.getItem('privilege') || 'viewer';
+
   const routes = {
     orders: {
+      role: ["owner", "employee"];
       keepToolbar: false,
-
       mount: () => { 
         content.className = "p-4 grid grid-cols-1 gap-4";
         createOrderCards("#content") 
@@ -22,8 +25,8 @@ window.addEventListener("load", () => {
       unmount: () => { content.className = ''; content.innerHTML = ''; }
     },
     inventory: {
+      role: ["owner", "employee"];
       keepToolbar: false,
-
       mount: () => {
 content.className = "p-4 grid grid-cols-[repeat(auto-fill,minmax(288px,1fr))] gap-4";
         createButton("#content-header", "Add Products", () => {
@@ -36,6 +39,7 @@ content.className = "p-4 grid grid-cols-[repeat(auto-fill,minmax(288px,1fr))] ga
       unmount: () => { content.className = ''; content.innerHTML = ''; }
     },
     addProduct: {
+      role: ["owner"];
       keepToolbar: true,
       mount: () => {
         content.className = 'p-4 flex flex-col';
@@ -44,6 +48,7 @@ content.className = "p-4 grid grid-cols-[repeat(auto-fill,minmax(288px,1fr))] ga
       unmount: () => { content.className = ''; content.innerHTML = ''; }
     },
     editProduct: {
+      role: ["owner"];
       keepToolbar: true,
       mount: (product) => {
         content.className = 'p-4 flex flex-col';
@@ -52,6 +57,7 @@ content.className = "p-4 grid grid-cols-[repeat(auto-fill,minmax(288px,1fr))] ga
       unmount: () => { content.className = ''; content.innerHTML = ''; }
     },
     financials: {
+      role: ["owner"];
     keepToolbar: true,
     mount: () => {
         content.className = "p-6 flex flex-col gap-6";
@@ -86,6 +92,7 @@ content.className = "p-4 grid grid-cols-[repeat(auto-fill,minmax(288px,1fr))] ga
     }
 },
     users: {
+      role: ["owner", "users"];
       keepToolbar: false,
       mount: () => { 
         content.className = "p-4 grid grid-cols-1 gap-4";
@@ -96,6 +103,7 @@ content.className = "p-4 grid grid-cols-[repeat(auto-fill,minmax(288px,1fr))] ga
       unmount: () => { content.className = ''; content.innerHTML = ''; }
     },
     editUser:{
+      role: ["owner"];
       keepToolBar: true,
       mount: (user) => { 
         content.className = "p-4 grid grid-cols-1 gap-4";
@@ -104,6 +112,7 @@ content.className = "p-4 grid grid-cols-[repeat(auto-fill,minmax(288px,1fr))] ga
       unmount: () => { content.className = ''; content.innerHTML = ''; }
     },
     addUser:{
+      role: ["owner"];
       keepToolBar: true,
       mount: () => {
         content.className = "p-4 flex flex-col";
@@ -120,6 +129,7 @@ content.className = "p-4 grid grid-cols-[repeat(auto-fill,minmax(288px,1fr))] ga
     keepToolbar: false,
     go(page, params = null) {
       if (this.current === page) return;
+      if(!this.role.includes(userRole)){showtoast("No Permission to access site", "fail"); return;}
       if (this.current) {
         routes[this.current].unmount();
       }

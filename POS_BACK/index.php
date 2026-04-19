@@ -1,7 +1,7 @@
 <!doctype html>
 <?php
 session_start();
-if(!isset($_SESSION["user"]) || !isset($_SESSION["priviledge"])){
+if(!isset($_SESSION["user"]) || !isset($_SESSION["privilege"])){
   header("Location: login.html");
   exit;
 }
@@ -9,6 +9,10 @@ if(!isset($_SESSION["user"]) || !isset($_SESSION["priviledge"])){
 <html lang="en">
 
 <head>
+<script>
+    localStorage.setItem('user_id', <?php echo json_encode($_SESSION["user"]); ?>);
+    localStorage.setItem('privilege', <?php echo json_encode($_SESSION["privilege"]); ?>);
+</script>
   <meta charset="UTF-8" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />

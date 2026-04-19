@@ -1,5 +1,6 @@
 <?php
 /**
+ * 
  * api/submit_order.php
  * POST - reads the customer's cart, inserts into delivery + order_items,
  *        decrements product stock, then clears their cart rows.

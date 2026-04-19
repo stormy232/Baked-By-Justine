@@ -7,7 +7,7 @@
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 
-require_once 'config.php';
+require_once __DIR__ . '/db.php';
 
 $db   = getDB();
 $stmt = $db->query('SELECT DISTINCT category FROM products WHERE category IS NOT NULL ORDER BY category');

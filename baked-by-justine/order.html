@@ -1,190 +1,225 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Order &mdash; Baked By Justine</title>
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/order.css">
+    <script src="https://js.stripe.com/v3/"></script>
 </head>
+
 <body>
 
-<header>
-    <nav>
-        <a class="nav-logo" href="order.html">Baked By <strong>Justine</strong></a>
-        <div class="nav-links" id="nav-links">
-            <a href="order.html" class="active">Order</a>
-            <a href="#order-history-section" onclick="loadOrderHistory()">Track Order</a>
-        </div>
-        <div style="display: flex; align-items: center; gap: 10px;">
-            <button class="nav-cart"
+    <header>
+        <nav>
+            <a class="nav-logo" href="order.html">Baked By <strong>Justine</strong></a>
+            <div class="nav-links" id="nav-links">
+                <a href="order.html" class="active">Order</a>
+                <a href="#order-history-section" onclick="loadOrderHistory()">Track Order</a>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <button class="nav-cart"
                     onclick="document.getElementById('summary-anchor').scrollIntoView({behavior:'smooth'})">
-                &#x1F9FA; Cart
-                <span class="count" id="cart-badge">0</span>
-            </button>
-            <button class="hamburger" onclick="toggleMobileNav()">
-                <span></span><span></span><span></span>
-            </button>
-        </div>
-    </nav>
-    <nav class="mobile-menu" id="mobile-menu">
-        <a href="order.html">Order</a>
-        <a href="#order-history-section" onclick="loadOrderHistory()">Track Order</a>
-    </nav>
-</header>
-
-<div id="toast"></div>
-
-<!-- TEST MODE BANNER -->
-<div style="background:#fffbe6; border-bottom:1px solid #f0d060; padding:10px 20px; text-align:center; font-size:13px; color:#6b4f00;">
-    &#9888; <strong>Test mode</strong> &mdash; cart auto-seeded for <strong>test@email.com</strong>
-</div>
-
-<main class="page-wrap">
-
-    <div class="left-col">
-
-        <div class="page-alert alert-error" id="top-alert">
-            <span>&#9888;</span>
-            <span id="top-alert-msg">Please check the form before continuing.</span>
-        </div>
-
-        <!-- Step 1: Cart -->
-        <div class="section-card">
-            <div class="section-head">
-                <span class="step-label">Step 1</span>
-                <span class="section-title">Your Cart</span>
-            </div>
-            <div class="cart-empty" id="cart-empty">
-                Your cart is empty.<br>
-                <a href="index.html">Browse our menu</a> to add items.
-            </div>
-            <div class="cart-list" id="cart-list" style="display: none;"></div>
-            <div style="padding: 0 20px 14px;">
-                <div class="field-error" id="cart-err">Your cart is empty.</div>
-            </div>
-        </div>
-
-        <!-- Step 2: Your Details -->
-        <div class="section-card">
-            <div class="section-head">
-                <span class="step-label">Step 2</span>
-                <span class="section-title">Your Details</span>
-            </div>
-            <div class="section-body">
-                <div class="form-group">
-                    <label class="form-label" for="email">Email</label>
-                    <input type="email" id="email" name="email"
-                           autocomplete="email" placeholder="jane@email.com">
-                    <div class="field-error" id="email-err">A valid email is required.</div>
-                </div>
-                <div class="form-group" style="margin-bottom: 0;">
-                    <label class="form-label" for="comments">
-                        Comments <small>optional</small>
-                    </label>
-                    <textarea id="comments" name="comments" rows="2"
-                              placeholder="Allergies, preferences, anything else..."></textarea>
-                </div>
-            </div>
-        </div>
-
-        <!-- Step 3: Pickup Window -->
-        <div class="section-card">
-            <div class="section-head">
-                <span class="step-label">Step 3</span>
-                <span class="section-title">Pickup Window</span>
-            </div>
-            <div class="section-body">
-                <div class="time-grid">
-                    <div class="time-option" onclick="selectTime(this, '10-15 minutes')">
-                        <strong>10&ndash;15 min</strong>
-                        <span>Express</span>
-                    </div>
-                    <div class="time-option selected" onclick="selectTime(this, '20-30 minutes')">
-                        <strong>20&ndash;30 min</strong>
-                        <span>Standard</span>
-                    </div>
-                    <div class="time-option" onclick="selectTime(this, '30-45 minutes')">
-                        <strong>30&ndash;45 min</strong>
-                        <span>Larger orders</span>
-                    </div>
-                    <div class="time-option" onclick="selectTime(this, '45-60 minutes')">
-                        <strong>45&ndash;60 min</strong>
-                        <span>Multiple items</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Step 4: Payment (test mode) -->
-        <div class="section-card">
-            <div class="section-head">
-                <span class="step-label">Step 4</span>
-                <span class="section-title">Payment</span>
-            </div>
-            <div class="section-body">
-                <div class="test-payment-notice">
-                    &#9888; Test mode &mdash; no real payment is processed.
-                    Click Place Order to submit directly to the database.
-                </div>
-            </div>
-        </div>
-
-        <!-- Order History -->
-        <div class="section-card order-history-section" id="order-history-section" style="display: none;">
-            <div class="section-head">
-                <span class="step-label">Your Orders</span>
-                <span class="section-title">Order History</span>
-            </div>
-            <div style="overflow-x: auto;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Order</th>
-                            <th>Status</th>
-                            <th>Items</th>
-                            <th>Total</th>
-                            <th>Date</th>
-                        </tr>
-                    </thead>
-                    <tbody id="order-history-body"></tbody>
-                </table>
-            </div>
-            <div class="loading-msg" id="no-orders-msg" style="display: none;">
-                No orders found for this email.
-            </div>
-        </div>
-
-    </div>
-
-    <!-- Sidebar -->
-    <div class="sidebar" id="summary-anchor">
-        <div class="summary-card">
-            <div class="summary-header">
-                <h2>Order Summary</h2>
-                <p>Pickup &middot; Baked By Justine</p>
-            </div>
-            <div class="summary-body">
-                <div class="summary-total-row">
-                    <span>Total</span>
-                    <span class="summary-total-amount" id="cart-total-amount">$0.00</span>
-                </div>
-                <button class="btn-primary" id="submit-btn" onclick="submitOrder()" disabled>
-                    Place Order
+                    &#x1F9FA; Cart
+                    <span class="count" id="cart-badge">0</span>
                 </button>
-                <p class="submit-note">Test mode &mdash; no payment required</p>
+                <button class="hamburger" onclick="toggleMobileNav()">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </nav>
+        <nav class="mobile-menu" id="mobile-menu">
+            <a href="order.html">Order</a>
+            <a href="#order-history-section" onclick="loadOrderHistory()">Track Order</a>
+        </nav>
+    </header>
+
+    <div id="toast"></div>
+
+
+
+    <main class="page-wrap">
+
+        <div class="left-col">
+
+            <div class="page-alert alert-error" id="top-alert">
+                <span>&#9888;</span>
+                <span id="top-alert-msg">Please check the form before continuing.</span>
+            </div>
+
+            <!-- Step 1: Cart -->
+            <div class="section-card">
+                <div class="section-head">
+                    <span class="step-label">Step 1</span>
+                    <span class="section-title">Your Cart</span>
+                </div>
+                <div class="cart-empty" id="cart-empty">
+                    Your cart is empty.<br>
+                    <a href="products.html">Browse our menu</a> to add items.
+                </div>
+                <div class="cart-list" id="cart-list" style="display: none;"></div>
+                <div style="padding: 0 20px 14px;">
+                    <div class="field-error" id="cart-err">Your cart is empty.</div>
+                </div>
+            </div>
+
+            <!-- Step 2: Your Details -->
+            <div class="section-card">
+                <div class="section-head">
+                    <span class="step-label">Step 2</span>
+                    <span class="section-title">Your Details</span>
+                </div>
+                <div class="section-body">
+                    <div class="form-group">
+                        <label class="form-label" for="email">Email</label>
+                        <input type="email" id="email" name="email" autocomplete="email" placeholder="jane@email.com">
+                        <div class="field-error" id="email-err">A valid email is required.</div>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label" for="comments">
+                            Comments <small>optional</small>
+                        </label>
+                        <textarea id="comments" name="comments" rows="2"
+                            placeholder="Allergies, preferences, anything else..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Pickup Window -->
+            <div class="section-card">
+                <div class="section-head">
+                    <span class="step-label">Step 3</span>
+                    <span class="section-title">Pickup Window</span>
+                </div>
+                <div class="section-body">
+                    <div class="time-grid">
+                        <div class="time-option" onclick="selectTime(this, '10-15 minutes')">
+                            <strong>10&ndash;15 min</strong>
+                            <span>Express</span>
+                        </div>
+                        <div class="time-option selected" onclick="selectTime(this, '20-30 minutes')">
+                            <strong>20&ndash;30 min</strong>
+                            <span>Standard</span>
+                        </div>
+                        <div class="time-option" onclick="selectTime(this, '30-45 minutes')">
+                            <strong>30&ndash;45 min</strong>
+                            <span>Larger orders</span>
+                        </div>
+                        <div class="time-option" onclick="selectTime(this, '45-60 minutes')">
+                            <strong>45&ndash;60 min</strong>
+                            <span>Multiple items</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-head">
+                    <span class="step-label">Step 4</span>
+                    <span class="section-title">Payment</span>
+                </div>
+                <div class="section-body">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">Card Details</label>
+                        <div class="stripe-card-wrapper" id="stripe-card-wrapper">
+                            <div id="card-element"></div>
+                        </div>
+                        <div class="field-error" id="stripe-err"></div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <!-- Order History -->
+            <div class="section-card order-history-section" id="order-history-section" style="display: none;">
+                <div class="section-head">
+                    <span class="step-label">Your Orders</span>
+                    <span class="section-title">Order History</span>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Order</th>
+                                <th>Status</th>
+                                <th>Items</th>
+                                <th>Total</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="order-history-body"></tbody>
+                    </table>
+                </div>
+                <div class="loading-msg" id="no-orders-msg" style="display: none;">
+                    No orders found for this email.
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Sidebar -->
+        <div class="sidebar" id="summary-anchor">
+            <div class="summary-card">
+                <div class="summary-header">
+                    <h2>Order Summary</h2>
+                    <p>Pickup &middot; Baked By Justine</p>
+                </div>
+                <div class="summary-body">
+                    <div class="summary-total-row">
+                        <span>Total</span>
+                        <span class="summary-total-amount" id="cart-total-amount">$0.00</span>
+                    </div>
+                    <button class="btn-primary" id="submit-btn" onclick="submitOrder()" disabled>
+                        Place Order
+                    </button>
+                    <p class="submit-note">Pickup &middot; Baked By Justine</p>
+                </div>
             </div>
         </div>
-    </div>
 
-</main>
+    </main>
 
-<footer>
-    <p>Baked By <span>Justine</span> &middot; Hamilton, ON &middot; Made with love</p>
-</footer>
+    <footer>
+        <p>Baked By <span>Justine</span> &middot; Hamilton, ON &middot; Made with love</p>
+    </footer>
 
-<script src="js/products_cart.js"></script>
-<script src="js/order.js"></script>
+    <script src="js/products_cart.js"></script>
+    <script src="js/order.js"></script>
 
+    <script>
+        var stripe = Stripe('pk_test_YOUR_PUBLISHABLE_KEY_HERE');
+        var elements = stripe.elements();
+        var cardElement = elements.create('card', {
+            style: {
+                base: {
+                    fontFamily: 'Inter, sans-serif',
+                    fontSize: '14px',
+                    color: '#2b1a0e',
+                    '::placeholder': { color: '#9a7d5f' }
+                }
+            }
+        });
+        cardElement.mount('#card-element');
+        cardElement.on('focus', function () {
+            document.getElementById('stripe-card-wrapper').classList.add('focused');
+        });
+        cardElement.on('blur', function () {
+            document.getElementById('stripe-card-wrapper').classList.remove('focused');
+        });
+        cardElement.on('change', function (event) {
+            var errEl = document.getElementById('stripe-err');
+            if (event.error) {
+                errEl.textContent = event.error.message;
+                errEl.classList.add('visible');
+            } else {
+                errEl.textContent = '';
+                errEl.classList.remove('visible');
+            }
+        });
+    </script>
 </body>
+
 </html>

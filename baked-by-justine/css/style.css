@@ -103,6 +103,7 @@ nav.scrolled { box-shadow: var(--shadow); }
 .nav-links a:hover::after { width: 100%; }
 .nav-links a.nav-btn::after { display: none; }
 
+
 /* hamburger */
 .hamburger {
   display: none;

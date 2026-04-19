@@ -1,7 +1,5 @@
--- ============================================================
 -- sample_data.sql
--- Run this AFTER running team.sql to populate test products.
--- ============================================================
+
 
 INSERT INTO products (name, price, quantity, description, discount_percent, image_link, category) VALUES
 -- Breads

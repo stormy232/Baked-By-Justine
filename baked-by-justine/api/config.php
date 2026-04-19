@@ -1,11 +1,7 @@
 <?php
-// ============================================================
-// config.php — Database connection settings
-// Change these values to match YOUR database setup
-// ============================================================
-
+// bad - TO BE DELETED
 define('DB_HOST', 'localhost');
-define('DB_NAME', 'bakedbyjustine'); // your database name
+define('DB_NAME', 'baked_by_justine'); // your database name
 define('DB_USER', 'root');           // your MySQL username
 define('DB_PASS', '');               // your MySQL password
 

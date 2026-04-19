@@ -1,98 +1,77 @@
 /* ============================================================
    BAKED BY JUSTINE — products.js
-   Fetches products + categories from the PHP API,
-   renders product cards, and handles category + search filtering.
+   Fetches products from PHP API, renders cards with Add to Cart
    ============================================================ */
 
-// ── Emoji fallbacks per category (shown when no image_link in DB)
 const CATEGORY_EMOJI = {
-  'breads':   '🍞',
-  'pastries': '🥐',
-  'cakes':    '🎂',
-  'desserts': '🎂',
-  'cookies':  '🍪',
-  'treats':   '🍪',
-  'drinks':   '☕',
+  'breads': '&#127838;',
+  'pastries': '&#129360;',
+  'cakes': '&#127874;',
+  'desserts': '&#127874;',
+  'cookies': '&#127850;',
+  'treats': '&#127850;',
+  'drinks': '&#9749;',
 };
 
 function getCategoryEmoji(category) {
-  if (!category) return '🛍️';
+  if (!category) return '&#128717;';
   const key = category.toLowerCase().trim();
   for (const [k, v] of Object.entries(CATEGORY_EMOJI)) {
     if (key.includes(k)) return v;
   }
-  return '🛍️';
+  return '&#128717;';
 }
 
-// ── DOM refs
-const grid        = document.getElementById('productsGrid');
-const catTabs     = document.getElementById('catTabs');
+const grid = document.getElementById('productsGrid');
+const catTabs = document.getElementById('catTabs');
 const searchInput = document.getElementById('searchInput');
-const stateLoad   = document.getElementById('stateLoading');
-const stateEmpty  = document.getElementById('stateEmpty');
-const stateError  = document.getElementById('stateError');
-const errorMsg    = document.getElementById('errorMsg');
+const stateLoad = document.getElementById('stateLoading');
+const stateEmpty = document.getElementById('stateEmpty');
+const stateError = document.getElementById('stateError');
+const errorMsg = document.getElementById('errorMsg');
 
-// ── State
-let allProducts  = [];
+let allProducts = [];
 let activeCategory = 'all';
-let searchTerm   = '';
+let searchTerm = '';
 
-// ── Show / hide UI states
 function showState(state) {
   stateLoad.classList.add('hidden');
   stateEmpty.classList.add('hidden');
   stateError.classList.add('hidden');
   grid.classList.add('hidden');
-
   if (state === 'loading') stateLoad.classList.remove('hidden');
-  if (state === 'empty')   stateEmpty.classList.remove('hidden');
-  if (state === 'error')   stateError.classList.remove('hidden');
-  if (state === 'grid')    grid.classList.remove('hidden');
+  if (state === 'empty') stateEmpty.classList.remove('hidden');
+  if (state === 'error') stateError.classList.remove('hidden');
+  if (state === 'grid') grid.classList.remove('hidden');
 }
 
-// ── Build a single product card
 function buildCard(p) {
   const card = document.createElement('div');
   card.className = 'product-card';
+  const isOutOfStock = parseInt(p.quantity) === 0;
 
-  // Discount badge
   if (p.discount_percent > 0) {
     const badge = document.createElement('div');
     badge.className = 'discount-badge';
-    badge.textContent = `${p.discount_percent}% OFF`;
+    badge.textContent = p.discount_percent + '% OFF';
     card.appendChild(badge);
   }
 
-  // Out of stock overlay
-  if (p.quantity === 0) {
+  if (isOutOfStock) {
     const oos = document.createElement('div');
     oos.className = 'out-of-stock-overlay';
     oos.innerHTML = '<span>Out of Stock</span>';
     card.appendChild(oos);
   }
 
-  // Image or emoji placeholder
-  if (p.image_link) {
-    const img = document.createElement('img');
-    img.className = 'product-img';
-    img.src = p.image_link;
-    img.alt = p.name;
-    img.loading = 'lazy';
-    // Fallback if image fails to load
-    img.onerror = () => {
-      img.replaceWith(makePlaceholder(p.category));
-    };
-    card.appendChild(img);
-  } else {
-    card.appendChild(makePlaceholder(p.category));
-  }
+  const ph = document.createElement('div');
+  ph.className = 'product-img-placeholder';
+  ph.innerHTML = getCategoryEmoji(p.category);
+  card.appendChild(ph);
 
-  // Card body
   const body = document.createElement('div');
   body.className = 'product-card-body';
 
-  // Category label
   if (p.category) {
     const catTag = document.createElement('div');
     catTag.className = 'product-category-tag';
@@ -100,13 +79,11 @@ function buildCard(p) {
     body.appendChild(catTag);
   }
 
-  // Name
   const name = document.createElement('h3');
   name.className = 'product-name';
   name.textContent = p.name;
   body.appendChild(name);
 
-  // Description
   if (p.description) {
     const desc = document.createElement('p');
     desc.className = 'product-description';
@@ -114,60 +91,110 @@ function buildCard(p) {
     body.appendChild(desc);
   }
 
-  // Price row
   const priceRow = document.createElement('div');
   priceRow.className = 'product-price-row';
-
   const displayPrice = p.discounted_price !== null ? p.discounted_price : p.price;
   const priceEl = document.createElement('span');
   priceEl.className = 'product-price';
-  priceEl.textContent = `$${parseFloat(displayPrice).toFixed(2)}`;
+  priceEl.textContent = '$' + parseFloat(displayPrice).toFixed(2);
   priceRow.appendChild(priceEl);
-
   if (p.discounted_price !== null) {
     const origEl = document.createElement('span');
     origEl.className = 'product-price-original';
-    origEl.textContent = `$${parseFloat(p.price).toFixed(2)}`;
+    origEl.textContent = '$' + parseFloat(p.price).toFixed(2);
     priceRow.appendChild(origEl);
   }
-
   body.appendChild(priceRow);
 
-  // Footer: stock status
   const footer = document.createElement('div');
   footer.className = 'product-footer';
-
   const stockEl = document.createElement('span');
   stockEl.className = 'stock-label';
-  if (p.quantity === 0) {
+  const qty = parseInt(p.quantity);
+  if (qty === 0) {
     stockEl.classList.add('stock-out');
     stockEl.textContent = 'Out of Stock';
-  } else if (p.quantity <= 5) {
+  } else if (qty <= 5) {
     stockEl.classList.add('stock-low');
-    stockEl.textContent = `Only ${p.quantity} left`;
+    stockEl.textContent = 'Only ' + qty + ' left';
   } else {
     stockEl.classList.add('stock-in');
     stockEl.textContent = 'In Stock';
   }
   footer.appendChild(stockEl);
-
   body.appendChild(footer);
-  card.appendChild(body);
 
-  return card;
+  // Add to Cart button
+  const addBtn = document.createElement('button');
+  addBtn.className = 'add-to-cart-btn';
+  addBtn.disabled = isOutOfStock;
+  addBtn.innerHTML = `
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+      <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+    </svg>
+    ${isOutOfStock ? 'Out of Stock' : 'Add to Cart'}`;
+  addBtn.addEventListener('click', function () {
+    var email = sessionStorage.getItem('bbj_customer_email');
+    if (!email || !email.includes('@')) {
+      email = prompt('Enter your email to add items to your cart:');
+      if (!email.includes('@')) return;
+  sessionStorage.setItem('bbj_customer_email', email);
 }
 
-function makePlaceholder(category) {
-  const ph = document.createElement('div');
-  ph.className = 'product-img-placeholder';
-  ph.textContent = getCategoryEmoji(category);
-  return ph;
+var existing = cart.items[p.product_id];
+if (existing) {
+  existing.qty += 1;
+} else {
+  cart.items[p.product_id] = {
+    product_id: p.product_id,
+    name: p.name,
+    category: p.category,
+    price: parseFloat(p.price),
+    discount_percent: parseFloat(p.discount_percent),
+    discounted_price: p.discount_percent > 0
+      ? Math.round(p.price * (1 - p.discount_percent / 100) * 100) / 100
+      : null,
+    qty: 1,
+    quantity: p.quantity
+  };
+}
+cart.render();
+updateCartBadge();
+
+fetch('api/cart.php', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    action: 'add',
+    customer_email: email,
+    product_id: p.product_id,
+    qty: 1
+  })
+})
+  .then(function (res) { return res.json(); })
+  .then(function (data) {
+    if (data.success) {
+      addBtn.textContent = '✓ Added!';
+      setTimeout(function () {
+        addBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" /><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" /></svg> Add to Cart`;
+      }, 1500);
+    } else {
+      cart.loadFromDB();
+      alert(data.error || 'Could not add item');
+    }
+  });
+});
+
+
+body.appendChild(addBtn);
+
+card.appendChild(body);
+return card;
 }
 
-// ── Filter + render
 function renderProducts() {
   const term = searchTerm.toLowerCase().trim();
-
   const filtered = allProducts.filter(p => {
     const matchCat = activeCategory === 'all' ||
       (p.category && p.category.toLowerCase() === activeCategory.toLowerCase());
@@ -178,23 +205,17 @@ function renderProducts() {
   });
 
   grid.innerHTML = '';
-
-  if (filtered.length === 0) {
-    showState('empty');
-    return;
-  }
-
+  if (filtered.length === 0) { showState('empty'); return; }
   filtered.forEach(p => grid.appendChild(buildCard(p)));
   showState('grid');
 }
 
-// ── Load categories from API and build tab buttons
 async function loadCategories() {
   try {
-    const res  = await fetch('api/categories.php');
+
+    const res = await fetch('/baked-by-justine/api/categories.php');
     const data = await res.json();
     if (!data.success) return;
-
     data.categories.forEach(cat => {
       const btn = document.createElement('button');
       btn.className = 'tab-btn';
@@ -202,8 +223,6 @@ async function loadCategories() {
       btn.textContent = cat;
       catTabs.appendChild(btn);
     });
-
-    // Attach click handlers to all tabs (including the "All" button already in HTML)
     catTabs.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         catTabs.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -212,33 +231,25 @@ async function loadCategories() {
         renderProducts();
       });
     });
-
-  } catch (e) {
-    // Non-critical — tabs just won't populate, search still works
-    console.warn('Could not load categories:', e);
-  }
+  } catch (e) { console.warn('Could not load categories:', e); }
 }
 
-// ── Load all products from API
 async function loadProducts() {
   showState('loading');
   try {
-    const res  = await fetch('api/products.php');
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+    const res = await fetch('/baked-by-justine/api/products.php');
+    if (!res.ok) throw new Error('HTTP ' + res.status);
     const data = await res.json();
-
     if (!data.success) throw new Error(data.error || 'Unknown error');
-
     allProducts = data.products;
     renderProducts();
-
   } catch (e) {
-    errorMsg.textContent = e.message || 'Could not reach the server. Make sure PHP is running.';
+    errorMsg.textContent = e.message || 'Could not reach the server.';
     showState('error');
   }
 }
 
-// ── Search input with debounce
 let debounceTimer;
 searchInput.addEventListener('input', () => {
   clearTimeout(debounceTimer);
@@ -248,6 +259,5 @@ searchInput.addEventListener('input', () => {
   }, 280);
 });
 
-// ── Init
 loadCategories();
 loadProducts();

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 18, 2026 at 09:06 PM
+-- Generation Time: Apr 18, 2026 at 10:30 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -28,10 +28,10 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `cart` (
-  `user_id` int(11) NOT NULL,
+  `customer_email` varchar(255) NOT NULL,
   `product_id` int(11) NOT NULL,
-  `qty` int(11) NOT NULL,
-  `created_at` int(11) NOT NULL DEFAULT current_timestamp()
+  `qty` int(11) NOT NULL DEFAULT 1,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -42,8 +42,8 @@ CREATE TABLE `cart` (
 -- Indexes for table `cart`
 --
 ALTER TABLE `cart`
-  ADD KEY `user_id` (`user_id`),
-  ADD KEY `product_id` (`product_id`);
+  ADD PRIMARY KEY (`customer_email`,`product_id`),
+  ADD KEY `fk_cart_product` (`product_id`);
 
 --
 -- Constraints for dumped tables
@@ -53,8 +53,7 @@ ALTER TABLE `cart`
 -- Constraints for table `cart`
 --
 ALTER TABLE `cart`
-  ADD CONSTRAINT `cart_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
-  ADD CONSTRAINT `cart_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`);
+  ADD CONSTRAINT `fk_cart_product` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

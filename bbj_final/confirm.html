@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmed &mdash; Baked By Justine</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/confirm.css">
+</head>
+<body>
+
+<header>
+    <nav>
+        <a class="nav-logo" href="order.html">Baked By <strong>Justine</strong></a>
+        <div class="nav-links" id="nav-links">
+            <a href="order.html">Order</a>
+            <a href="order.html">Track Order</a>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <button class="nav-cart" onclick="window.location.href='order.html'">
+                &#x1F9FA; Cart
+                <span class="count">0</span>
+            </button>
+            <button class="hamburger" onclick="toggleMobileNav()">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+    <nav class="mobile-menu" id="mobile-menu">
+        <a href="order.html">Order</a>
+        <a href="order.html">Track Order</a>
+    </nav>
+</header>
+
+<main class="confirm-wrap">
+    <div class="confirm-card">
+
+        <div class="confirm-top">
+            <div class="confirm-check">&#10003;</div>
+            <h1>Order Placed!</h1>
+            <p>Justine will start on your bakes shortly.</p>
+        </div>
+
+        <div class="confirm-body">
+
+            <div class="status-row">
+                <span class="status-badge">
+                    <span class="pulse-dot"></span>
+                    Pending
+                </span>
+            </div>
+
+            <div class="order-id-box">
+                <div class="order-id-label">Order Number</div>
+                <div class="order-id-value" id="confirm-id">...</div>
+            </div>
+
+            <table class="details-table" id="confirm-table"></table>
+
+            <div class="confirm-actions">
+                <button class="btn-primary" onclick="placeAnother()">
+                    Place Another Order
+                </button>
+                <a class="btn-outline" href="order.html">&larr; Back to Menu</a>
+            </div>
+
+        </div>
+    </div>
+</main>
+
+<footer>
+    <p>Baked By <span>Justine</span> &middot; Hamilton, ON &middot; Made with love</p>
+</footer>
+
+<script src="js/products_cart.js"></script>
+<script src="js/order.js"></script>
+
+</body>
+</html>

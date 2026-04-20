@@ -13,7 +13,7 @@
 require_once __DIR__ . '/db.php';
 header('Content-Type: application/json');
 
-define('STRIPE_SECRET_KEY', 'sk_test_YOUR_KEY_HERE');
+define('STRIPE_SECRET_KEY', 'sk_test_51TON2fBBWdF3bohJFUvIXrIb5fdGv5CIolRkzP6SMiilnPWzlw0RODVJqKxpGKLQgJ7a9q3V4jsMqYIjT3GPM2ge00WQlDJiWZ');
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);

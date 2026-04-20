@@ -1,7 +1,12 @@
 import { deleteUser, registerUser, updateUser } from "../services/UserRequests";
 import { showToast } from "./permissions";
 
-// Single row for the desktop table view
+/**
+ * Single row for the desktop table view
+ * @param {Object} user - The user json obj
+ * @param {Object} onEdit - Function that handles updating users
+ * @returns {HTMLElement} This function returns html DOM Element
+ */
 function userRow(user, onEdit) {
   const tr = document.createElement('tr');
   tr.className = 'border-b border-stone-50 hover:bg-stone-50 transition-colors cursor-pointer';
@@ -36,24 +41,39 @@ function userRow(user, onEdit) {
   if (deleteBtn) {
     deleteBtn.addEventListener('click', (e) => {
       e.stopPropagation(); // Prevents the row's 'onSelect' (edit) from triggering
-      
+
       if (confirm(`Are you sure you want to delete ${user.username}?`)) {
         // Use the ID from your product object
         const idToDelete = user.user_id;
-        
-       const result = await deleteUser(idToDelete);
-        if(result){
-        showToast(`${product.name} removed user`, "success"); //
-        window.router.go('users', null, true); // Refresh the view
+        const handleDelete = () => {
+          // Call the function - it returns a Promise
+          deleteUser(idToDelete)
+            .then((result) => {
+              // This block runs if the promise resolves successfully
+              if (result) {
+                showToast(`${product.name} removed user`, "success");
+                window.router.go('users', null, true); // Refresh the view
+              }
+            })
+            .catch((error) => {
+              // Always include a catch block for network errors/server crashes
+              console.error("Deletion failed:", error);
+              showToast("Failed to remove user", "error");
+            });
+        };
       }
-    }
     });
   }
   tr.addEventListener('click', () => onEdit(user));
   return tr;
 }
 
-// Mobile card view
+/**
+ * Individual UserCard
+ * @param {Object} user - The user json obj
+ * @param {Object} onEdit - Function that handles updating users
+ * @returns {HTMLElement} This function returns html DOM Element
+ */
 function userCard(user, onEdit) {
   const card = document.createElement('div');
   card.className = 'flex items-center gap-4 p-4 bg-white rounded-xl border border-stone-100 hover:shadow-md transition-shadow cursor-pointer';
@@ -79,6 +99,13 @@ function userCard(user, onEdit) {
   return card;
 }
 
+/**
+ * This is a builder function that packages other components to build the overall user page
+ * showcasing all employees and owners
+ * @param {Object} data - The data json obj -> returned by api
+ * @param {Object} onEdit - Function that handles updating users
+ * @returns {HTMLElement} This function returns html DOM Element
+ */
 export function createUsersPage(data, onEdit) {
   const wrapper = document.createElement('div');
   wrapper.className = 'flex flex-col gap-4 w-full';
@@ -152,6 +179,11 @@ export function createUsersPage(data, onEdit) {
   return wrapper;
 }
 
+/**
+ * Page used to create a User
+ * @param {void} 
+ * @returns {HTMLElement} This function returns html DOM Element
+ */
 export function createUserPage() {
   const container = document.createElement('div');
   container.className = "min-h-screen bg-stone-100 p-6 flex w-full justify-center items-center";
@@ -182,10 +214,16 @@ export function createUserPage() {
   container.querySelector('#addUserForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    registerUser(formData);});
+    registerUser(formData);
+  });
   return container;
 }
 
+/**
+ * Page used to edit an existing user
+ * @param {Object} user -> user json obj
+ * @returns {HTMLElement} This function returns html DOM Element
+ */
 export function editUserPage(user) {
   const container = document.createElement('div');
   container.className = "min-h-screen bg-stone-100 p-6 flex w-full justify-center items-center";
@@ -213,6 +251,7 @@ export function editUserPage(user) {
   container.querySelector('#editUserForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    updateUser(formData);});
+    updateUser(formData);
+  });
   return container;
 }

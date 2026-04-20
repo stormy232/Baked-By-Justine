@@ -1,50 +1,61 @@
 import { getOrders, updateOrder } from "../services/OrderRequests.js";
 
 const STATUS_CONFIG = {
-  preparing: { label: 'IN PROGRESS',    classes: 'bg-orange-100 text-orange-700' },
-  pending:   { label: 'PENDING',        classes: 'bg-stone-100 text-stone-500'   },
-  finished:  { label: 'READY TO SERVE', classes: 'bg-green-100 text-green-700'   },
+  preparing: { label: 'IN PROGRESS', classes: 'bg-orange-100 text-orange-700' },
+  pending: { label: 'PENDING', classes: 'bg-stone-100 text-stone-500' },
+  finished: { label: 'READY TO SERVE', classes: 'bg-green-100 text-green-700' },
 };
 
 export function createFilterBar(onFilterUpdate) {
-    const filterContainer = document.createElement("div");
-    filterContainer.className = "flex flex-row items-end gap-4 p-4 bg-white border-b border-gray-200";
+  const filterContainer = document.createElement("div");
+  filterContainer.className = "flex flex-row items-end gap-4 p-4 bg-white border-b border-gray-200";
 
-    // Helper to create labeled inputs
-    const createInput = (labelTxt, id) => {
-        const wrapper = document.createElement("div");
-        wrapper.className = "flex flex-col gap-1";
-        
-        const label = document.createElement("label");
-        label.className = "text-[10px] font-bold text-[#6b6661] uppercase tracking-wider";
-        label.textContent = labelTxt;
+  // Helper to create labeled inputs
+  const createInput = (labelTxt, id, date) => {
+    const wrapper = document.createElement("div");
+    wrapper.className = "flex flex-col gap-1";
 
-        const input = document.createElement("input");
-        input.type = "date";
-        input.id = id;
-        input.className = "px-2 py-1.5 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-black outline-none";
-        
-        // Default to today's date
-        input.value = new Date().toISOString().split('T')[0];
+    const label = document.createElement("label");
+    label.className = "text-[10px] font-bold text-[#6b6661] uppercase tracking-wider";
+    label.textContent = labelTxt;
 
-        wrapper.append(label, input);
-        return { wrapper, input };
-    };
+    const input = document.createElement("input");
+    input.type = "date";
+    input.id = id;
+    input.className = "px-2 py-1.5 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-black outline-none";
 
-    const start = createInput("Start Date", "startDate");
-    const end = createInput("End Date", "endDate");
+    // Default to today's date
+    input.value = date;
 
-    // Filter Button
-    const filterBtn = document.createElement("button");
-    filterBtn.className = "px-4 py-1.5 bg-black text-white text-sm rounded hover:bg-gray-800 transition-colors h-[34px]";
-    filterBtn.textContent = "Apply";
+    wrapper.append(label, input);
+    return { wrapper, input };
+  };
 
-    filterBtn.onclick = () => {
-        onFilterUpdate(start.input.value, end.input.value);
-    };
+  // Current Date
+  const now = new Date();
 
-    filterContainer.append(start.wrapper, end.wrapper, filterBtn);
-    return filterContainer;
+  // 1. Start Date (Today)
+  const endValue = now.toISOString().split('T')[0];
+
+  // 2. End Date (7 Days Ago)
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(now.getDate() - 7);
+  const startValue = sevenDaysAgo.toISOString().split('T')[0];
+
+  // Your Inputs
+  const start = createInput("Start Date", "startDate", startValue);
+  const end = createInput("End Date", "endDate", endValue);
+  // Filter Button
+  const filterBtn = document.createElement("button");
+  filterBtn.className = "px-4 py-1.5 bg-black text-white text-sm rounded hover:bg-gray-800 transition-colors h-[34px]";
+  filterBtn.textContent = "Apply";
+
+  filterBtn.onclick = () => {
+    onFilterUpdate(start.input.value, end.input.value);
+  };
+
+  filterContainer.append(start.wrapper, end.wrapper, filterBtn);
+  return { filterContainer, startValue: start.input.value, endValue: end.input.value };
 }
 
 function orderCard(order) {
@@ -126,9 +137,9 @@ function orderCard(order) {
 }
 
 
-async function renderOrders(listEl, filter = 'all', start_date=null, end_date=null) {
+async function renderOrders(listEl, filter = 'all', start_date = null, end_date = null) {
   listEl.innerHTML = '<p class="text-stone-400 text-sm text-center py-8">Loading...</p>';
-  const orders = await getOrders(start_date,end_date);
+  const orders = await getOrders(start_date, end_date);
   if (!orders) {
     listEl.innerHTML = '<p class="text-stone-400 text-sm text-center py-8">Could not load orders.</p>';
     return;
@@ -165,6 +176,10 @@ export async function createOrdersPage(container) {
     await renderOrders(list, activeTab, currentStart, currentEnd);
   });
 
+  currentStart = filter_date.startValue;
+  currentEnd = filter_date.endValue;
+  container.append(filter_date.filterContainer);
+
   // Tab bar
   let activeTab = 'all';
   const tabs = document.createElement('div');
@@ -189,7 +204,7 @@ export async function createOrdersPage(container) {
   document.body.append(fab);
 
   // Initial load
-  await renderOrders(list, activeTab, start_date, end_date);
+  await renderOrders(list, activeTab, currentStart, currentEnd);
 
   // Tab switching
   tabs.querySelectorAll('.tab-btn').forEach(btn => {
@@ -199,7 +214,7 @@ export async function createOrdersPage(container) {
         b.className = 'tab-btn flex-1 py-2 rounded-lg text-sm font-medium text-stone-400';
       });
       btn.className = 'tab-btn flex-1 py-2 rounded-lg text-sm font-medium bg-white shadow-sm text-stone-800';
-      renderOrders(list, activeTab);
+      renderOrders(list, activeTab, currentStart, currentEnd);
     });
   });
 

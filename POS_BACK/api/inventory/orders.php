@@ -5,6 +5,8 @@ header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
 header('Content-Type: application/json');
 require_once  "../config.php";
 
+session_start();
+
 switch ($_SERVER["REQUEST_METHOD"]) {
   case "GET":
     getOrdersWithProducts($dbh);
@@ -14,14 +16,14 @@ switch ($_SERVER["REQUEST_METHOD"]) {
 };
 
 function getOrdersWithProducts($dbh) {
-    if ($_SESSION[privilege] !== "owner" || $_SESSION[privilege] !== "employee"){
+    if ($_SESSION["privilege"] !== "owner" && $_SESSION["privilege"] !== "employee"){
         http_response_code(400);
         echo json_encode(["error" => "Insufficient Perms"]);
         exit;
     }
 
     $start_date = filter_input(INPUT_GET, "start_date", FILTER_SANITIZE_SPECIAL_CHARS);
-    $end_date = filter_input(INPUT_GET, end_date, FILTER_SANITIZE_SPECIAL_CHARS);
+    $end_date = filter_input(INPUT_GET, "end_date", FILTER_SANITIZE_SPECIAL_CHARS);
     // 1. The SQL Query: Joining all 3 tables
     $sql = "SELECT 
                 d.order_id, 
@@ -75,13 +77,14 @@ function getOrdersWithProducts($dbh) {
         echo json_encode(array_values($orders));
 
     } catch (PDOException $e) {
-        return ["error" => $e->getMessage()];
+        http_response_code(500);
+        echo json_encode(["error" => $e->getMessage()]);
     }
 }
 
 function handleUpdateDeliveryStatus($dbh)
 {
-     if ($_SESSION[privilege] !== "owner" || $_SESSION[privilege] !== "employee"){
+     if ($_SESSION["privilege"] !== "owner" && $_SESSION["privilege"] !== "employee"){
         http_response_code(400);
         echo json_encode(["error" => "Insufficient Perms"]);
         exit;

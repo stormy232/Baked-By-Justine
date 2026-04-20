@@ -1,3 +1,16 @@
+/**
+ * Name: Vardaan Randev
+ * Date: April 20, 2026
+ * Description: Implements a live search filter for a table, allowing users to 
+ * filter table rows in real-time based on their text input. [cite: 6, 7, 8, 9]
+ */
+
+/**
+ * Filters the rows of a table based on the search query entered in the input field.
+ * @param {function} onInput - Function to show dropdown on searchbar input
+ * @param {function} onNavigate - Function when user clicks on a dropdown element
+ * @returns {HTMLElement} 
+ */
 export function createSearchBar(onInput, onNavigate) {
   const wrapper = document.createElement('div');
   // 'relative' is key for the dropdown positioning
@@ -42,6 +55,11 @@ export function createSearchBar(onInput, onNavigate) {
   return wrapper;
 }
 
+/**
+ * Used to create setting and notification buttons on top left
+ * @param {void}
+ * @returns {HTMLElement} 
+ */
 export function createTopBarIcons() {
   const wrapper = document.createElement('div');
   wrapper.className = "flex items-center gap-1 ml-auto mr-4";

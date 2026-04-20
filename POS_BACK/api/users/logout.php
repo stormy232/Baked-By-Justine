@@ -8,6 +8,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
 
 
 function logoutUser(){
+    $_SESSION = array();
     session_destroy();
     echo json_encode(["success" => "User logged out"]);
 }

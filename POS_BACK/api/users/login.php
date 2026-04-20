@@ -36,7 +36,7 @@ function AuthorizeUser($dbh)
         $db_pass = $result[0]["password_hash"];
         if (password_verify($password, $db_pass)) {
           $_SESSION["user"] = $result[0]["user_id"];
-          $_SESSION["privilege"] = $result[0]["privilege"];
+          $_SESSION["privilege"] = $result[0]["privilege"]; 
           echo json_encode(["success" => "login"]);
         } else {
           http_response_code(404);

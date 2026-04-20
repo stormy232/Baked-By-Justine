@@ -1,5 +1,12 @@
 import { logoutUser } from "../services/UserRequests";
 
+/**
+ * SideBar Button Component
+ * @param {String} label -> Button Label
+ * @param {String} iconClass -> string for fontAwesome emoji
+ * @param {function} onClick -> function for onclick of button
+ * @returns {HTMLElement} This function returns html DOM Element
+ */
 export function sideButton(label, iconClass, onClick) {
   const button = document.createElement("div");
   
@@ -20,7 +27,13 @@ export function sideButton(label, iconClass, onClick) {
   return button;
 }
 
-export function userProfileButton(User, Status, pageLoad) {
+/**
+ * SideBar Button Component
+ * @param {String} User -> UserName
+ * @param {String} Status -> User Status
+ * @returns {HTMLElement} This function returns html DOM Element
+ */
+export function userProfileButton(User, Status) {
 const containerDiv = document.createElement("div");
 
 // Layout and Theme matching
@@ -38,7 +51,6 @@ userStatus.className = "text-xs text-[#6b6661]"; // Using your muted brown/gray 
 userStatus.textContent = Status;
 
 titleDiv.append(userTitle, userStatus);
-document.addEventListener("click",pageLoad);
 const logoutBtn = document.createElement("button");
     logoutBtn.className = "p-1.5 hover:bg-gray-200 rounded-md transition-colors text-[#6b6661] hover:text-red-600";
     // Using a simple SVG icon for a cleaner look
@@ -63,6 +75,4 @@ const logoutBtn = document.createElement("button");
     
     return containerDiv;
 }
-export function sideBar(){
-    
-}
+

@@ -1,3 +1,10 @@
+/**
+ * Name: Vardaan Randev
+ * Date: April 20, 2026
+ * Description: Manages frontend interactions, including mobile menu toggling, 
+ * modal visibility, and dynamic display logic for the dashboard.
+ */
+
 import { sideButton, userProfileButton } from "./components/sidebar.js";
 import { createSearchBar, createTopBarIcons } from "./components/searchbar.js";
 import { buildInventoryPage, createItemsPage, editItemPage } from "./components/inventory.js";
@@ -10,6 +17,7 @@ import { getFinancials } from "./services/FinanceRequests.js";
 import { getUsers } from "./services/UserRequests.js";
 import { createFinancialsPage } from "./components/financials.js";
 
+//Dynamically Construcing Page
 window.addEventListener("load", () => {
   const leftBar = document.getElementById("left-bar");
   const topBar = document.getElementById("top-bar");
@@ -21,6 +29,7 @@ window.addEventListener("load", () => {
 
   let ordersCleanup = null; // holds FAB cleanup fn from orders page
 
+  //List of Page Routes
   const routes = {
     orders: {
       role: ["owner", "employee"],
@@ -123,6 +132,7 @@ window.addEventListener("load", () => {
     }
   };
 
+  //Page Router
   const router = {
     current: null,
     params: null,

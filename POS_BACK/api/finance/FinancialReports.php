@@ -1,130 +1,81 @@
 <?php
-/**
- * financeReports.php - Stripe-Only POS Analytics
- */
-
 header('Content-Type: application/json');
-require_once 'config.php';
+header("Access-Control-Allow-Origin: http://localhost"); // Added http:// for validity
+header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
+require_once '../config.php'; 
 
-// --- Execution Block ---
-$dbh = createPDO();
-$startDate = $_GET['start'] ?? date('Y-m-01');
-$endDate = $_GET['end'] ?? date('Y-m-d');
-//Fix Conn Block and yeah fix the rest of the stuff as well
 $response = [
-    'metadata' => getMetadata($startDate, $endDate),
-    'overview_tiles' => getSalesOverview($dbh, $startDate, $endDate),
-    'stripe_reconciliation' => getStripeMetrics($dbh, $startDate, $endDate),
-    'sales_by_product' => getProductSales($dbh, $startDate, $endDate),
+    'overview_tiles' => [
+        'gross_sales' => 0,
+        'total_orders' => 0,
+        'aov' => 0.00
+    ],
+    'sales_by_product' => [],
     'errors' => []
 ];
 
-if (isset($GLOBALS['api_errors'])) {
-    $response['errors'] = $GLOBALS['api_errors'];
-    http_response_code(500);
+try {
+    // Standardize date format to include full day for DATETIME columns
+    $start = $_GET['start'] ?? date('Y-m-01');
+    $end = $_GET['end'] ?? date('Y-m-d');
+    
+    // Append time to end date to catch orders made on the final day
+    $end_dt = $end . ' 23:59:59';
+
+    $response['overview_tiles'] = getOverviewTiles($dbh, $start, $end_dt);
+    $response['sales_by_product'] = getSalesByProduct($dbh, $start, $end_dt);
+
+} catch (Exception $e) {
+    $response['errors'][] = $e->getMessage();
 }
 
-echo json_encode($response, JSON_PRETTY_PRINT);
+echo json_encode($response);
 exit;
 
-// --- Function Definitions ---
+function getOverviewTiles($pdo, $start, $end) {
+    // Changed COUNT(id) to COUNT(order_id)
+    $stmt = $pdo->prepare("
+        SELECT 
+            COALESCE(SUM(total_price), 0) as gross_sales,
+            COUNT(order_id) as total_orders,
+            COALESCE(AVG(total_price), 0) as aov
+        FROM delivery 
+        WHERE created_at BETWEEN :start AND :end
+    ");
+    $stmt->execute(['start' => $start, 'end' => $end]);
+    $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
-function getMetadata($start, $end) {
     return [
-        'period' => ['start' => $start, 'end' => $end],
-        'processor' => 'Stripe (Fixed)',
-        'generated_at' => date('c')
+        'gross_sales' => (float)$data['gross_sales'],
+        'total_orders' => (int)$data['total_orders'],
+        'aov' => (float)$data['aov']
     ];
 }
 
-/**
- * Calculates high-level totals from the delivery table.
- */
-function getSalesOverview($conn, $start, $end) {
-    $sql = "SELECT 
-                COUNT(order_id) as total_orders, 
-                SUM(total_price) as gross_sales,
-                AVG(total_price) as aov
-             FROM delivery 
-             WHERE created_at BETWEEN ? AND ? 
-             AND order_status = 'completed'";
-    
-    try {
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ss", $start, $end);
-        $stmt->execute();
-        $res = $stmt->get_result()->fetch_assoc();
+function getSalesByProduct($pdo, $start, $end) {
+    // Updated JOINs to use order_id and product_id
+    $stmt = $pdo->prepare("
+        SELECT 
+            p.name as product_name,
+            SUM(oi.quantity) as qty,
+            SUM(oi.price_at_purchase * oi.quantity) as revenue
+        FROM order_items oi
+        JOIN products p ON oi.product_id = p.product_id
+        JOIN delivery d ON oi.order_id = d.order_id
+        WHERE d.created_at BETWEEN :start AND :end
+        GROUP BY p.product_id
+        ORDER BY revenue DESC
+    ");
+    $stmt->execute(['start' => $start, 'end' => $end]);
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+    // Cast values to numbers so JS doesn't have to
+    return array_map(function($row) {
         return [
-            'gross_sales'  => (float)($res['gross_sales'] ?? 0),
-            'total_orders' => (int)($res['total_orders'] ?? 0),
-            'aov'          => round((float)($res['aov'] ?? 0), 2)
+            'product_name' => $row['product_name'],
+            'qty' => (int)$row['qty'],
+            'revenue' => (float)$row['revenue']
         ];
-    } catch (Exception $e) {
-        $GLOBALS['api_errors'][] = "Overview Error: " . $e->getMessage();
-        return null;
-    }
-}
-
-/**
- * STRIPE-SPECIFIC METRICS
- * Calculates estimated fees (Stripe CA: 2.9% + $0.30 per transaction)
- */
-function getStripeMetrics($conn, $start, $end) {
-    $sql = "SELECT total_price FROM delivery 
-            WHERE created_at BETWEEN ? AND ? 
-            AND order_status = 'completed'";
-    
-    try {
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ss", $start, $end);
-        $stmt->execute();
-        $result = $stmt->get_result();
-
-        $totalGross = 0;
-        $estimatedFees = 0;
-        $count = 0;
-
-        while ($row = $result->fetch_assoc()) {
-            $price = (float)$row['total_price'];
-            $totalGross += $price;
-            // Stripe CA Standard Fee: 2.9% + 30 cents
-            $estimatedFees += ($price * 0.029) + 0.30;
-            $count++;
-        }
-
-        return [
-            'total_gross' => $totalGross,
-            'estimated_fees' => round($estimatedFees, 2),
-            'estimated_net_payout' => round($totalGross - $estimatedFees, 2),
-            'processing_rate_effective' => $totalGross > 0 ? round(($estimatedFees / $totalGross) * 100, 2) . '%' : '0%'
-        ];
-    } catch (Exception $e) {
-        $GLOBALS['api_errors'][] = "Stripe Calc Error: " . $e->getMessage();
-        return null;
-    }
-}
-
-function getProductSales($conn, $start, $end) {
-    $sql = "SELECT 
-                p.name, 
-                SUM(oi.quantity) as units_sold,
-                SUM(oi.quantity * oi.price_at_purchase) as product_revenue
-             FROM order_items oi
-             JOIN products p ON oi.product_id = p.id
-             JOIN delivery d ON oi.order_id = d.order_id
-             WHERE d.created_at BETWEEN ? AND ?
-             AND d.order_status = 'completed'
-             GROUP BY p.id
-             ORDER BY product_revenue DESC";
-
-    try {
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ss", $start, $end);
-        $stmt->execute();
-        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-    } catch (Exception $e) {
-        $GLOBALS['api_errors'][] = "Product Sales Error: " . $e->getMessage();
-        return [];
-    }
+    }, $rows);
 }

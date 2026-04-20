@@ -1,3 +1,5 @@
+import { logoutUser } from "../services/UserRequests";
+
 export function sideButton(label, iconClass, onClick) {
   const button = document.createElement("div");
   
@@ -36,9 +38,30 @@ userStatus.className = "text-xs text-[#6b6661]"; // Using your muted brown/gray 
 userStatus.textContent = Status;
 
 titleDiv.append(userTitle, userStatus);
-containerDiv.append(titleDiv);
 document.addEventListener("click",pageLoad);
-return containerDiv;
+const logoutBtn = document.createElement("button");
+    logoutBtn.className = "p-1.5 hover:bg-gray-200 rounded-md transition-colors text-[#6b6661] hover:text-red-600";
+    // Using a simple SVG icon for a cleaner look
+    logoutBtn.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+        </svg>
+    `;
+    
+    // Placeholder for your functionality
+    logoutBtn.addEventListener("click", (e) => {
+        e.stopPropagation(); // Prevents the containerDiv click from firing
+        logoutUser();
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("privilege");
+        location.reload();
+      });
+
+    containerDiv.append(titleDiv, logoutBtn);
+    
+    return containerDiv;
 }
 export function sideBar(){
     

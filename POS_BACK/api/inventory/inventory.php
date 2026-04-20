@@ -1,28 +1,21 @@
 <?php
-// Allow any origin to access this resource
-header("Access-Control-Allow-Origin: *");
-// (Optional) Allow specific HTTP methods
-header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-// (Optional) Allow specific headers from the frontend
-header("Access-Control-Allow-Headers: Content-Type, Authorization");
+header("Access-Control-Allow-Origin: localhost");
+header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 // Parse without sections
 header('Content-Type: application/json');
-require_once __DIR__ . "/config.php";
-$dbh = createPDO();
-
+session_start();
+require_once "../config.php";
 switch ($_SERVER["REQUEST_METHOD"]) {
-  case "DELETE":
-    removeItem($dbh);
-    break;
   case "GET":
     handleGetItem($dbh);
     break;
   case "POST":
     /** @var array $config Defined in config.php */
     handlePostItem($dbh, $config["img_path"]);
-    break;
-  case "UPDATE":
-    handleUpdateItem($dbh, $config["img_path"]);
     break;
 };
 
@@ -93,6 +86,11 @@ function checkfile($target_dir)
 
 function handlePostItem($dbh, $target_dir)
 {
+  if($_SESSION["privilege"] !== "owner"){
+    http_response_code(400);
+    echo json_encode(["error" => "Insufficient Permissions"]);
+    exit;
+  }
   $name = filter_input(INPUT_POST, "name");
   $price = filter_input(INPUT_POST, "price", FILTER_VALIDATE_FLOAT);
   $quantity = filter_input(INPUT_POST, "quantity", FILTER_VALIDATE_INT);

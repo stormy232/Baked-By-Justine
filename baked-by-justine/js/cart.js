@@ -337,7 +337,7 @@ function injectCartHTML() {
           <span>Total</span>
           <span id="cartTotal">$0.00</span>
         </div>
-        <a href="https://cs1xd3.cas.mcmaster.ca/~moalimr/Baked-By-Justine/baked-by-justine/order.html"
+        <a href="order.html"
            class="btn btn-primary cart-checkout-btn">
           Proceed to Checkout
         </a>

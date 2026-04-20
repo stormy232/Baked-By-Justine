@@ -15,6 +15,25 @@
 
 'use strict';
 
+
+// rendering images
+var PRODUCT_IMAGES = {
+    'classic sourdough': 'https://images.unsplash.com/photo-1586444248902-2f64eddc13df?w=400&q=80',
+    'rustic baguette': 'https://images.unsplash.com/photo-1549931319-a545dcf3bc7b?w=400&q=80',
+    'butter croissant': 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=400&q=80',
+    'cinnamon roll': 'https://images.unsplash.com/photo-1609428456270-cefaf1f6b58d?w=400&q=80',
+    'brownie': 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=400&q=80',
+};
+
+function getProductImage(name, category, dbImageLink) {
+    if (dbImageLink) return dbImageLink;
+    var lower = (name || '').toLowerCase();
+    var keys = Object.keys(PRODUCT_IMAGES);
+    for (var i = 0; i < keys.length; i++) {
+        if (lower.includes(keys[i])) return PRODUCT_IMAGES[keys[i]];
+    }
+    return null;
+}
 // ═══════════════════════════════════════════════════════
 // CART STATE
 // Manages the cart by talking to api/cart.php.
@@ -163,9 +182,10 @@ function renderCart() {
             ? item.price * (1 - item.discount_percent / 100)
             : item.price;
         var sub = final * item.qty;
-        var emoji = item.emoji || getEmoji(item) || '🧁';
-        var thumb = item.image_link
-            ? '<img src="' + item.image_link + '" alt="' + item.name + '" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display=\'none\';this.parentNode.textContent=\'' + emoji + '\'">'
+        var emoji = getEmoji(item) || '🧁';
+        var imgUrl = getProductImage(item.name, item.category, item.image_link);
+        var thumb = imgUrl
+            ? '<img src="' + imgUrl + '" alt="' + item.name + '" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display=\'none\';this.parentNode.textContent=\'' + emoji + '\'">'
             : emoji;
 
         html += '<div class="cart-row" id="cart-row-' + item.product_id + '">';
@@ -290,42 +310,42 @@ function submitOrder() {
         return;
     }
 
-    var email    = document.getElementById('email').value.trim();
+    var email = document.getElementById('email').value.trim();
     var comments = document.getElementById('comments').value.trim();
-    var btn      = document.getElementById('submit-btn');
+    var btn = document.getElementById('submit-btn');
 
-    btn.disabled    = true;
+    btn.disabled = true;
     btn.textContent = 'Redirecting to payment...';
 
     // Store comments and prepTime so confirm.html can submit the order after payment
     sessionStorage.setItem('bbj_pending_comments', comments);
-    sessionStorage.setItem('bbj_pending_prep',     chosenPrepTime);
+    sessionStorage.setItem('bbj_pending_prep', chosenPrepTime);
 
     fetch('api/create_checkout_session.php', {
-        method:  'POST',
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({
+        body: JSON.stringify({
             customer_email: email,
-            est_prep_time:  chosenPrepTime
+            est_prep_time: chosenPrepTime
         })
     })
-    .then(function(res) {
-        return res.json().then(function(data) {
-            if (!res.ok) throw new Error(data.error || 'Could not start checkout');
-            return data;
+        .then(function (res) {
+            return res.json().then(function (data) {
+                if (!res.ok) throw new Error(data.error || 'Could not start checkout');
+                return data;
+            });
+        })
+        .then(function (data) {
+            // Redirect to Stripe Checkout page
+            window.location.href = data.url;
+        })
+        .catch(function (err) {
+            btn.disabled = false;
+            btn.textContent = 'Place Order';
+            document.getElementById('top-alert').classList.add('visible');
+            document.getElementById('top-alert-msg').textContent = err.message;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         });
-    })
-    .then(function(data) {
-        // Redirect to Stripe Checkout page
-        window.location.href = data.url;
-    })
-    .catch(function(err) {
-        btn.disabled    = false;
-        btn.textContent = 'Place Order';
-        document.getElementById('top-alert').classList.add('visible');
-        document.getElementById('top-alert-msg').textContent = err.message;
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
 }
 
 function loadOrderHistory() {
@@ -398,62 +418,62 @@ function placeAnother() {
 }
 
 function initConfirmPage() {
-    var confirmIdEl    = document.getElementById('confirm-id');
+    var confirmIdEl = document.getElementById('confirm-id');
     var confirmTableEl = document.getElementById('confirm-table');
 
     // Check if Stripe redirected here with ?session_id=...&email=...&prep=...
-    var params   = new URLSearchParams(window.location.search);
-    var email    = params.get('email');
+    var params = new URLSearchParams(window.location.search);
+    var email = params.get('email');
     var prepTime = params.get('prep') || sessionStorage.getItem('bbj_pending_prep') || '20-30 minutes';
     var comments = sessionStorage.getItem('bbj_pending_comments') || '';
 
     if (email) {
         // Came from Stripe Checkout — submit the order to the DB now
-        if (confirmIdEl)    confirmIdEl.textContent    = 'Processing...';
-        if (confirmTableEl) confirmTableEl.innerHTML   = '<tr><td colspan="2" style="text-align:center;padding:16px;">Finalising your order...</td></tr>';
+        if (confirmIdEl) confirmIdEl.textContent = 'Processing...';
+        if (confirmTableEl) confirmTableEl.innerHTML = '<tr><td colspan="2" style="text-align:center;padding:16px;">Finalising your order...</td></tr>';
 
         fetch('api/submit_order.php', {
-            method:  'POST',
+            method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body:    JSON.stringify({
+            body: JSON.stringify({
                 customer_email: email,
-                est_prep_time:  prepTime,
-                comments:       comments
+                est_prep_time: prepTime,
+                comments: comments
             })
         })
-        .then(function(res) {
-            return res.json().then(function(data) {
-                if (!res.ok) throw new Error(data.error || 'Order submission failed');
-                return data;
+            .then(function (res) {
+                return res.json().then(function (data) {
+                    if (!res.ok) throw new Error(data.error || 'Order submission failed');
+                    return data;
+                });
+            })
+            .then(function (data) {
+                sessionStorage.removeItem('bbj_pending_comments');
+                sessionStorage.removeItem('bbj_pending_prep');
+
+                if (confirmIdEl) confirmIdEl.textContent = '#' + data.order_id;
+
+                var date = new Date(data.created_at).toLocaleString('en-CA', {
+                    month: 'short', day: 'numeric',
+                    hour: '2-digit', minute: '2-digit', hour12: true
+                });
+
+                var rows = '';
+                rows += '<tr><td>Email</td><td>' + email + '</td></tr>';
+                rows += '<tr><td>Pickup window</td><td>' + prepTime + '</td></tr>';
+                rows += '<tr><td>Status</td><td>Pending</td></tr>';
+                rows += '<tr><td>Placed</td><td>' + date + '</td></tr>';
+                rows += '<tr><td><strong>Total</strong></td><td><strong>$' + data.total.toFixed(2) + '</strong></td></tr>';
+
+                if (confirmTableEl) confirmTableEl.innerHTML = rows;
+
+                // Clean the URL
+                window.history.replaceState({}, document.title, 'confirm.html');
+            })
+            .catch(function (err) {
+                if (confirmIdEl) confirmIdEl.textContent = 'Error';
+                if (confirmTableEl) confirmTableEl.innerHTML = '<tr><td colspan="2" style="color:var(--red);padding:16px;">' + err.message + '</td></tr>';
             });
-        })
-        .then(function(data) {
-            sessionStorage.removeItem('bbj_pending_comments');
-            sessionStorage.removeItem('bbj_pending_prep');
-
-            if (confirmIdEl) confirmIdEl.textContent = '#' + data.order_id;
-
-            var date = new Date(data.created_at).toLocaleString('en-CA', {
-                month: 'short', day: 'numeric',
-                hour: '2-digit', minute: '2-digit', hour12: true
-            });
-
-            var rows = '';
-            rows += '<tr><td>Email</td><td>' + email + '</td></tr>';
-            rows += '<tr><td>Pickup window</td><td>' + prepTime + '</td></tr>';
-            rows += '<tr><td>Status</td><td>Pending</td></tr>';
-            rows += '<tr><td>Placed</td><td>' + date + '</td></tr>';
-            rows += '<tr><td><strong>Total</strong></td><td><strong>$' + data.total.toFixed(2) + '</strong></td></tr>';
-
-            if (confirmTableEl) confirmTableEl.innerHTML = rows;
-
-            // Clean the URL
-            window.history.replaceState({}, document.title, 'confirm.html');
-        })
-        .catch(function(err) {
-            if (confirmIdEl)    confirmIdEl.textContent  = 'Error';
-            if (confirmTableEl) confirmTableEl.innerHTML = '<tr><td colspan="2" style="color:var(--red);padding:16px;">' + err.message + '</td></tr>';
-        });
 
     } else {
         // Fallback: came from sessionStorage payload (old flow)
@@ -517,15 +537,15 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     fetch('api/auth.php?action=session')
-        .then(function(res) { return res.json(); })
-        .then(function(data) {
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
             if (data.success && data.logged_in && data.user && data.user.email) {
                 Cart.setEmail(data.user.email);
                 if (emailInput) emailInput.value = data.user.email;
             }
         })
-        .catch(function() {})
-        .finally(function() {
+        .catch(function () { })
+        .finally(function () {
             productsReady.then(function () {
                 Cart.load().then(function () {
                     renderCart();

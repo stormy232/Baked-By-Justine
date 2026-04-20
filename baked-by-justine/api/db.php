@@ -5,10 +5,10 @@
  * Include this in every API endpoint.
  */
 
-define('DB_HOST', 'localhost:41062');
-define('DB_USER', 'root');
-define('DB_PASS', '');
-define('DB_NAME', 'team project');
+define('DB_HOST', 'localhost');
+define('DB_USER', 'randevv_local');
+define('DB_PASS', '6Q<x;xm/');
+define('DB_NAME', ' randevv_db');
 
 function getDB() {
     static $pdo = null;

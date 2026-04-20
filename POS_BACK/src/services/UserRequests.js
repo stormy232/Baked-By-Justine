@@ -1,38 +1,78 @@
-const url = "http://localhost:41062/api/users/register.php";
+import { showToast } from "../components/permissions.js";
 
-export function registerUser(formData) {
-fetch(url, {
-    method: "POST",
-    body: formData, //
-  })
-.then(response => {
-  if (!response.ok) throw new Error('Network response was not ok'); //
-  return response.json();
-})
-.catch(error => console.error('Error:', error)); //
+const url = "/~randevv/Justine_Bakes/POS_BACK/api/users/register.php";
+const updateURL = "/~randevv/Justine_Bakes/POS_BACK/api/users/updateUser.php";
+const logoutURL = "/~randevv/Justine_Bakes/POS_BACK/api/users/logoutUser.php"
+
+export async function getUsers() {
+  try {
+    const response = await fetch(updateURL);
+    if (!response.ok) { 
+      showToast("Failed to retrieve staff list.", "error"); 
+      return null; 
+    }
+    return await response.json();
+  } catch (err) {
+    showToast("Network error: Could not reach user server.", "error");
+    return null;
+  }
 }
 
-export function deleteUser(userId) {
-fetch(url + `?userid=${userId}`, {
-    method: "DELETE",
-  })
-.then(response => {
-  if (!response.ok) throw new Error('Network response was not ok'); //
-  return response.json();
-})
-.catch(error => console.error('Error:', error)); //
+export async function registerUser(formData) {
+  try {
+    const response = await fetch(url, { method: "POST", body: formData });
+    if (!response.ok) { 
+      showToast("Could not register new user.", "error"); 
+      return null; 
+    }
+    showToast("User registered successfully!", "success");
+    return await response.json();
+  } catch (err) {
+    showToast("Error connecting to registration service.", "error");
+    return null;
+  }
 }
 
-export function updateUser(formData) {
-fetch(url, {
-    method: "PUT",
-    body: formData, //
-  })
-.then(response => {
-  if (!response.ok) throw new Error('Network response was not ok'); //
-  return response.json();
-})
-.catch(error => console.error('Error:', error)); //
+export async function updateUser(formData) {
+  try {
+    const response = await fetch(updateURL, { method: "POST", body: formData });
+    if (!response.ok) { 
+      showToast("Update failed: Server rejected the changes.", "error"); 
+      return null; 
+    }
+    showToast("User profile updated.", "success");
+    return await response.json();
+  } catch (err) {
+    showToast("Connection lost: User update failed.", "error");
+    return null;
+  }
+}
+export async function deleteUser(id) {
+  try {
+    const response = await fetch(url + `?userid=${id}`);
+    if (!response.ok) { 
+      showToast("Update failed: Server rejected the changes.", "error"); 
+      return null; 
+    }
+    showToast("User profile updated.", "success");
+    return await response.json();
+  } catch (err) {
+    showToast("Connection lost: User update failed.", "error");
+    return null;
+  }
 }
 
-
+export async function logoutUser() {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) { 
+      showToast("Update failed: Server rejected the changes.", "error"); 
+      return null; 
+    }
+    showToast("User profile updated.", "success");
+    return await response.json();
+  } catch (err) {
+    showToast("Connection lost: User update failed.", "error");
+    return null;
+  }
+}

@@ -37,10 +37,12 @@ if(!isset($_SESSION["user"]) || !isset($_SESSION["privilege"])){
     <div class="flex-1 flex flex-col">
       <div id="top-bar" class="flex flex-row my-2"></div>
       <hr class="opacity-10">
-      <div id="content-header" class="flex flex-row my-2"></div>
+      <div id="content-header" class="flex flex-row my-2 mx-2 justify-end"></div>
       <div id="content" class=""></div>
     </div>
-
+<div 
+  id="toast-container" 
+  class="fixed bottom-5 right-5 z-[100] flex flex-col gap-3 pointer-events-none"></div>
   </div>
 </body>
 

@@ -1,13 +1,9 @@
 <?php
-require_once __DIR__ . "/config.php";
+header("Access-Control-Allow-Origin: localhost");
+header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
+require_once "../config.php";
 session_start();
-try {
-  $dbh = new PDO("mysql:host={$config["db_url"]};dbname={$config["db_name"]}", "{$config["db_user"]}", "{$config["db_pass"]}");
-} catch (PDOException $e) {
-  http_response_code(500);
-  echo json_encode(["status" => "Error: Initalizing Database"]);
-  exit;
-}
 
 switch ($_SERVER["REQUEST_METHOD"]) {
   case "POST":

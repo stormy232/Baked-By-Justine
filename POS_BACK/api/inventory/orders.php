@@ -1,22 +1,27 @@
 <?php
-require_once __DIR__ . "/config.php";
-$dbh = createPDO();
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
+header('Content-Type: application/json');
+require_once  "../config.php";
 
 switch ($_SERVER["REQUEST_METHOD"]) {
-  case "DELETE":
-    //    removeItem($dbh);
-    break;
   case "GET":
     getOrdersWithProducts($dbh);
     break;
   case "POST":
-    //   handlePostItem($dbh, $options["img_path"]);
-    break;
-  case "PUT":
     handleUpdateDeliveryStatus($dbh);
 };
 
 function getOrdersWithProducts($dbh) {
+    if ($_SESSION[privilege] !== "owner" || $_SESSION[privilege] !== "employee"){
+        http_response_code(400);
+        echo json_encode(["error" => "Insufficient Perms"]);
+        exit;
+    }
+
+    $start_date = filter_input(INPUT_GET, "start_date", FILTER_SANITIZE_SPECIAL_CHARS);
+    $end_date = filter_input(INPUT_GET, end_date, FILTER_SANITIZE_SPECIAL_CHARS);
     // 1. The SQL Query: Joining all 3 tables
     $sql = "SELECT 
                 d.order_id, 
@@ -31,11 +36,12 @@ function getOrdersWithProducts($dbh) {
             FROM delivery d
             JOIN order_items oi ON d.order_id = oi.order_id
             JOIN products p ON oi.product_id = p.product_id
+            WHERE d.created_at BETWEEN ? AND ?
             ORDER BY d.created_at DESC";
 
     try {
         $stmt = $dbh->prepare($sql);
-        $stmt->execute();
+        $stmt->execute([$start_date,$end_date]);
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         $orders = [];
@@ -66,7 +72,7 @@ function getOrdersWithProducts($dbh) {
         }
 
         // 4. Reset array keys so it returns as a standard JSON list [] instead of an object {}
-        return array_values($orders);
+        echo json_encode(array_values($orders));
 
     } catch (PDOException $e) {
         return ["error" => $e->getMessage()];
@@ -75,12 +81,13 @@ function getOrdersWithProducts($dbh) {
 
 function handleUpdateDeliveryStatus($dbh)
 {
-    // 1. Get the Order ID and the New Status
-    $putData = [];
-    parse_str(file_get_contents("php://input"), $putData);
-
-    $orderId = filter_var($putData["order_id"] ?? null, FILTER_VALIDATE_INT) ?: null;
-    $status = filter_var($putData["status"] ?? null, FILTER_SANITIZE_SPECIAL_CHARS) ?: null;
+     if ($_SESSION[privilege] !== "owner" || $_SESSION[privilege] !== "employee"){
+        http_response_code(400);
+        echo json_encode(["error" => "Insufficient Perms"]);
+        exit;
+    }
+    $orderId = filter_input(INPUT_POST, "orderId", FILTER_VALIDATE_INT) ?: null;
+    $status = filter_input(INPUT_POST, "status", FILTER_SANITIZE_SPECIAL_CHARS) ?: null;
 
     // 2. Strict Validation
     // Check if the inputs are missing
@@ -88,7 +95,7 @@ function handleUpdateDeliveryStatus($dbh)
         http_response_code(400);
         echo json_encode([
             "error" => "Invalid Argument Passed In",
-            "received" => ["order_id" => $orderId, "status" => $status]
+            "received" => ["orderId" => $orderId, "status" => $status]
         ]);
         exit;
     }
@@ -103,13 +110,13 @@ function handleUpdateDeliveryStatus($dbh)
     }
 
     // 4. The Update Statement
-    $sql = "SELECT cutomer_email FROM delivery WHERE order_id = ?"; 
+    $sql = "SELECT customer_email FROM delivery WHERE order_id = ?"; 
     $stmt = $dbh->prepare($sql);
-    $success = $stmt->execute($orderId);
+    $success = $stmt->execute([$orderId]);
     $user_email = "";
-    if($success->rowcount() > 0){
+    if($stmt->rowcount() > 0){
       $row = $stmt->fetch();
-      $user_email = $row["user_email"];
+      $user_email = $row["customer_email"];
     }
     else{
       echo json_encode(["error" => "Couldn't Obtain SQL records"]);
@@ -136,11 +143,7 @@ function handleUpdateDeliveryStatus($dbh)
           $headers = "From: bakery@justine.com" . "\r\n" .
            "Reply-To: bakery@justine.com" . "\r\n" .
            "Content-Type: text/html; charset=UTF-8" . "\r\n";
-          if(mail($user_email , $subject, $message, $headers)) {
-            echo "Email sent successfully.";
-          } else {
-              echo "Email delivery failed.";
-          }
+            mail($user_email, $subject, $message, $headers);
         }
     }
 }

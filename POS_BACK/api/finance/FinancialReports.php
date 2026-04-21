@@ -1,4 +1,9 @@
 <?php
+// Name: Vardaan Randev
+// Date Created: April 20, 2026
+// Description: API endpoint that returns financial report data as JSON, including
+//              overview metrics (gross sales, order count, average order value)
+//              and a revenue breakdown by product for a given date range.
 header('Content-Type: application/json');
 header("Access-Control-Allow-Origin: http://localhost"); // Added http:// for validity
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
@@ -33,6 +38,14 @@ try {
 echo json_encode($response);
 exit;
 
+/**
+ * Queries the database for high-level financial overview metrics within a date range.
+ *
+ * @param PDO $pdo The active PDO database connection
+ * @param string $start The start datetime string for the report period (e.g., '2025-01-01')
+ * @param string $end The end datetime string for the report period, including time (e.g., '2025-01-31 23:59:59')
+ * @return array Associative array with keys 'gross_sales' (float), 'total_orders' (int), and 'aov' (float)
+ */
 function getOverviewTiles($pdo, $start, $end) {
     // Changed COUNT(id) to COUNT(order_id)
     $stmt = $pdo->prepare("
@@ -53,6 +66,14 @@ function getOverviewTiles($pdo, $start, $end) {
     ];
 }
 
+/**
+ * Queries the database for per-product sales totals within a date range, ordered by revenue.
+ *
+ * @param PDO $pdo The active PDO database connection
+ * @param string $start The start datetime string for the report period (e.g., '2025-01-01')
+ * @param string $end The end datetime string for the report period, including time (e.g., '2025-01-31 23:59:59')
+ * @return array Indexed array of associative arrays, each with keys 'product_name' (string), 'qty' (int), and 'revenue' (float)
+ */
 function getSalesByProduct($pdo, $start, $end) {
     // Updated JOINs to use order_id and product_id
     $stmt = $pdo->prepare("

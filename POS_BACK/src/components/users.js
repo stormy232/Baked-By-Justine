@@ -2,6 +2,13 @@ import { deleteUser, registerUser, updateUser } from "../services/UserRequests";
 import { showToast } from "./permissions";
 
 /**
+ * Name: Vardaan Randev
+ * Date: April 20, 2026
+ * Description: Implements a bunch of components for the userPage as well
+ * as a userPage builder function
+ */
+
+/**
  * Single row for the desktop table view
  * @param {Object} user - The user json obj
  * @param {Object} onEdit - Function that handles updating users

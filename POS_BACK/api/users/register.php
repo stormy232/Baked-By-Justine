@@ -1,4 +1,8 @@
 <?php
+// Name: Vardaan Randev
+// Date Created: April 20, 2026
+// Description: API endpoint for registering and deleting staff user accounts.
+//              Restricted to authenticated owners only.
 header("Access-Control-Allow-Origin: localhost");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
@@ -23,7 +27,14 @@ switch ($_SERVER["REQUEST_METHOD"]) {
     deleteUser($dbh);
     break;
 };
-
+ 
+/**
+ * Registers a new user by inserting their username, hashed password, and privilege level into the database.
+ * Requires the session user to have 'owner' privilege.
+ *
+ * @param PDO $dbh The active PDO database connection
+ * @return void Outputs a JSON success or error message
+ */
 function registerUser($dbh)
 {
   $SQL_STATEMENT = "INSERT INTO users (username, password_hash, privilege) VALUES (?, ?, ?)";
@@ -43,6 +54,13 @@ function registerUser($dbh)
   }
 }
 
+/**
+ * Deletes a user account from the database by their user ID.
+ * Requires the session user to have 'owner' privilege.
+ *
+ * @param PDO $dbh The active PDO database connection
+ * @return void Outputs a JSON success or error message
+ */
 function deleteUser($dbh){
   $userid = filter_input(INPUT_GET, "userid", FILTER_VALIDATE_INT);
   if($userid === null || !$userid){

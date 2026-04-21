@@ -1,3 +1,17 @@
+/**
+ * Name: Vardaan Randev
+ * Date: April 20, 2026
+ * Description: Implements a customized styled button component
+ */
+ 
+/**
+ * Creates a styled button and appends it to the specified container element.
+ *
+ * @param {HTMLElement} container - The parent DOM element to append the button to
+ * @param {String} placeholder - The label text displayed inside the button
+ * @param {Function} onClick - Callback function invoked when the button is clicked
+ * @returns {void}
+ */
 export function createButton(container, placeholder, onClick) {
   const parent = container;
   const wrapper = document.createElement('div');

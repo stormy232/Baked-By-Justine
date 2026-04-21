@@ -1,3 +1,4 @@
+
 <?php
 require_once __DIR__ . "/stripe_config.php";
 function stripeRequest($endpoint, $method = 'POST', $data = []) {

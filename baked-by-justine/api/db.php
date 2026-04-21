@@ -10,7 +10,7 @@
 define('DB_HOST', 'localhost');
 define('DB_USER', 'randevv_local');
 define('DB_PASS', '6Q<x;xm/');
-define('DB_NAME', ' randevv_db');
+define('DB_NAME', 'randevv_db');
 
 function getDB() {
     static $pdo = null;

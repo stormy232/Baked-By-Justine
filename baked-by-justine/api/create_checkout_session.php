@@ -1,6 +1,10 @@
 <?php
 /**
  * api/create_checkout_session.php
+ * 
+ * Creator: Ridwan Moalim
+ * The purpose of this php file is to checkout the client using stripe api
+ * 
  * POST - creates a Stripe Checkout Session and returns the redirect URL.
  *
  * Does NOT require Composer. Uses Stripe's REST API directly via cURL.

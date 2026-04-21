@@ -1,6 +1,9 @@
 /* ============================================================
    BAKED BY JUSTINE — auth.js  (v2)
    Login / Register popup, nav Sign In button, session handling
+
+   Creator: Abdullah Musani
+   Contributor: Ridwan Moalim
    ============================================================ */
 
 /* ── State ── */

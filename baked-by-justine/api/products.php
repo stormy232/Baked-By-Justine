@@ -5,6 +5,10 @@
 // Supports optional ?category=X filter and ?search=X search.
 // ============================================================
 
+
+
+// Creator: Abdullah Musani
+
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *'); // allow same-origin fetch
 

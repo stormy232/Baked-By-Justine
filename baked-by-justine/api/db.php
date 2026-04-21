@@ -5,6 +5,8 @@
  * Include this in every API endpoint.
  */
 
+// Creators: Abdullah Musani & Ridwan Moalim, Vardaan Randev
+
 define('DB_HOST', 'localhost');
 define('DB_USER', 'randevv_local');
 define('DB_PASS', '6Q<x;xm/');

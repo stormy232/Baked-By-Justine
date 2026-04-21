@@ -3,9 +3,17 @@
  *
  * Fetches product data from api/products.php.
  * Static fallback matches sample_data.sql exactly including image URLs.
+ * 
+ * Contributors:
+ * Ridwan Moalim, and Abdullah added hardcoded products
+ * 
  */
 
+
+
 // EMOJI'S ARE USED AS BACKUP IMAGES IF ISSUES ARISE WITH IMAGE LOADING
+
+
 var EMOJI_MAP = {
     'Breads':   '🍞',
     'Pastries': '🥐',
@@ -13,7 +21,7 @@ var EMOJI_MAP = {
     'Cookies':  '🍪',
     'Drinks':   '☕'
 };
-
+// current products
 var STATIC_PRODUCTS = [
     { product_id: 1,  name: 'Classic Sourdough',           category: 'Breads',   price: 8.50,  quantity: 20, discount_percent: 0,  description: 'Traditional long-ferment sourdough with a crispy crust and chewy interior. Full loaf.',        image_link: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=200&h=200&fit=crop' },
     { product_id: 2,  name: 'Rustic Baguette',              category: 'Breads',   price: 4.00,  quantity: 35, discount_percent: 0,  description: 'Classic French-style baguette with a golden crust. Perfect with butter or cheese.',            image_link: 'https://images.unsplash.com/photo-1568471173242-461f0a730452?w=200&h=200&fit=crop' },
@@ -48,18 +56,19 @@ var STATIC_PRODUCTS = [
 ];
 
 var PRODUCTS = [];
-
+// function to calculate the discounted price of an item
 function getDiscountedPrice(product) {
     if (product.discount_percent > 0) {
         return product.price * (1 - product.discount_percent / 100);
     }
     return product.price;
 }
-
+// if image generation fails, fall back onto an emoji of a product
 function getEmoji(product) {
     return EMOJI_MAP[product.category] || '🧁';
 }
-
+// Waits for product data to load from the API before rendering the cart.
+// .then() runs on success, .catch() runs if the API is unreachable (uses fallback).
 var productsReady = fetch('api/products_cart.php')
     .then(function(response) {
         if (!response.ok) throw new Error('HTTP ' + response.status);

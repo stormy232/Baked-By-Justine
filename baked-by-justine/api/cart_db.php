@@ -3,13 +3,15 @@
 // api/cart_db.php
 // Handles DB cart for logged-in users
 // Actions: get, add, update, remove, clear
+
+
 // ============================================================
 
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Headers: Content-Type');
 
-require_once 'config.php';
+require_once __DIR__ . '/db.php';
 session_start();
 
 $action = $_GET['action'] ?? '';

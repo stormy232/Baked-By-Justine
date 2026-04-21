@@ -1,8 +1,20 @@
 /* ============================================================
    BAKED BY JUSTINE — cart.js
    Full shopping cart: add, remove, quantity control, stock check
+
+   Contributors:
+   Abdullah Musani, Ridwan Moalim for fixes
+
+    Ridwan's Fixes:
+   Changed the way cart works via accessing a cart table instead of sessionStorage
+   Emptied save() and load() to no longer write to localstorage
+   Added loadfromDB() method that fetches from api/cart.php and rebuilds cart.items
+   Added discount_price calculation inside loadFromDB() so cart.render does not show NaN anymore
+   inside injectCartHTML(), changed redirection to my order.html to connect our modules
    ============================================================ */
 
+
+  
 const cart = {
   items: {},
 

@@ -11,6 +11,9 @@
  *   POST api/cart.php  { action:"update", ... } set qty / remove
  *   POST api/submit_order.php                 place order
  *   GET  api/orders.php?customer_email=x      order history
+ * 
+ * Contributor:
+ * Ridwan Moalim
  */
 
 'use strict';

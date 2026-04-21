@@ -3,6 +3,9 @@
  * api/orders.php
  * GET ?customer_email=x  -> returns all orders for this email, newest first,
  *                           with items nested inside each order.
+ * 
+ * Creator: Ridwan Moalim
+ * The purpose of this file is to handle order tracking on order.html
  */
 
 require_once __DIR__ . '/db.php';

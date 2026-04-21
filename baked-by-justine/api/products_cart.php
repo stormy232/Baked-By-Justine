@@ -2,6 +2,9 @@
 /**
  * api/products.php
  * GET -> returns all products ordered by category, name
+ * 
+ * Creator: Ridwan Moalim
+ * Purpose: Access all products with quantity > 0
  */
 
 require_once __DIR__ . '/db.php';

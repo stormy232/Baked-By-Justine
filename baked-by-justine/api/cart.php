@@ -6,6 +6,8 @@
  * GET  ?customer_email=x              -> fetch all cart items for this email
  * POST { action:"add",    ... }       -> add qty to a product
  * POST { action:"update", ... }       -> set exact qty (0 = remove)
+ * 
+ * Creator: Ridwan Moalim
  */
 
 require_once __DIR__ . '/db.php';

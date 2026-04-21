@@ -6,6 +6,8 @@
  *        decrements product stock, then clears their cart rows.
  *        All DB writes are inside one transaction so nothing half-saves.
  *
+ * Creator: Ridwan Moalim
+ * Purpose: Handles Order Submission
  */
 
 require_once __DIR__ . '/db.php';

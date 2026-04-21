@@ -52,8 +52,8 @@ function inventoryRow(product, onSelect) {
       <div class="flex items-center gap-3">
         <div class="w-12 h-12 rounded-lg bg-stone-100 overflow-hidden flex-shrink-0">
           ${product.image_link
-            ? `<img src="${product.image_link}" class="w-full h-full object-cover" />`
-            : `<i class="fa-regular fa-image text-stone-300 text-lg flex items-center justify-center w-full h-full"></i>`}
+      ? `<img src="${product.image_link}" class="w-full h-full object-cover" />`
+      : `<i class="fa-regular fa-image text-stone-300 text-lg flex items-center justify-center w-full h-full"></i>`}
         </div>
         <div>
           <p class="text-sm font-medium text-stone-800">${product.name}</p>
@@ -73,30 +73,31 @@ function inventoryRow(product, onSelect) {
     <td class="px-6 py-4 text-sm text-stone-600">$${parseFloat(product.price).toFixed(2)}</td>
     <td class="px-6 py-4">
       ${isLow
-        ? `<span class="text-xs font-bold text-red-500 flex items-center gap-1"><i class="fa-solid fa-triangle-exclamation"></i> REFILL</span>`
-        : `<button class="delete-btn text-stone-400 hover:text-stone-700 p-1"><i class="fa-solid fa-trash"></i></button>`}
+      ? `<span class="text-xs font-bold text-red-500 flex items-center gap-1"><i class="fa-solid fa-triangle-exclamation"></i> REFILL</span>`
+      : `<button class="delete-btn text-stone-400 hover:text-stone-700 p-1"><i class="fa-solid fa-trash"></i></button>`}
     </td>
   `;
   const deleteBtn = tr.querySelector('.delete-btn');
-if (deleteBtn) {
-  deleteBtn.addEventListener('click', (e) => {
-    e.stopPropagation(); // Prevents the row's 'onSelect' (edit) from triggering
-    
-    if (confirm(`Are you sure you want to delete ${product.name}?`)) {
-      // Use the ID from your product object
-      const idToDelete = product.product_id;
-      
-      removeInventory(idToDelete);
-      
-      // Update UI feedback
-      showToast(`${product.name} removed from inventory`, "success"); //
-      window.router.go('inventory', null, true); // Refresh the view
-    }
-  });
-}
+  if (deleteBtn) {
+    deleteBtn.addEventListener('click', (e) => {
+      e.stopPropagation(); // Prevents the row's 'onSelect' (edit) from triggering
 
-// Row selection for editing
-tr.addEventListener('click', () => onSelect(product));
+      if (confirm(`Are you sure you want to delete ${product.name}?`)) {
+        // Use the ID from your product object
+        const idToDelete = product.product_id;
+
+        removeInventory(idToDelete)
+          .then(response => {
+            showToast("Deleted Product", "success")
+            window.router.go('inventory', null, true)
+          })// Refresh the view)
+          .catch(error => { showToast(error, "error") });
+      }
+    });
+  }
+
+  // Row selection for editing
+  tr.addEventListener('click', () => onSelect(product));
   return tr;
 }
 
@@ -119,8 +120,8 @@ function inventoryCard(product, onSelect) {
   card.innerHTML = `
     <div class="w-14 h-14 rounded-lg bg-stone-100 overflow-hidden flex-shrink-0 flex items-center justify-center">
       ${product.image_link
-        ? `<img src="${product.image_link}" class="w-full h-full object-cover" />`
-        : `<i class="fa-regular fa-image text-stone-300 text-xl"></i>`}
+      ? `<img src="${product.image_link}" class="w-full h-full object-cover" />`
+      : `<i class="fa-regular fa-image text-stone-300 text-xl"></i>`}
     </div>
     <div class="flex-1 min-w-0">
       <p class="text-sm font-semibold text-stone-800 truncate">${product.name}</p>
@@ -132,8 +133,8 @@ function inventoryCard(product, onSelect) {
     <div class="text-right flex-shrink-0">
       <p class="text-sm font-bold ${isLow ? 'text-red-500' : 'text-stone-800'}">${product.quantity} ${product.unit ?? 'units'}</p>
       ${isLow
-        ? `<span class="text-[10px] font-bold text-red-500 uppercase">Restock<br>Soon</span>`
-        : `<span class="text-[10px] text-stone-400 uppercase">In Stock</span>`}
+      ? `<span class="text-[10px] font-bold text-red-500 uppercase">Restock<br>Soon</span>`
+      : `<span class="text-[10px] text-stone-400 uppercase">In Stock</span>`}
     </div>
   `;
   card.addEventListener('click', () => onSelect(product));
@@ -260,9 +261,13 @@ export function createItemsPage() {
           <input type="number" step="0.01" name="price" class="mt-1 block w-full rounded-md border-stone-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm p-2.5 border" placeholder="Price">
         </div>
         <div>
-          <label class="block text-sm font-medium text-amber-900">Quantity</label>
+          <label class="block text-sm font-medium text-amber-900">Stock Units</label>
           <input type="number" step="1" name="quantity" class="mt-1 block w-full rounded-md border-stone-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm p-2.5 border" placeholder="Quantity">
         </div>
+          <div class="flex flex-col gap-1.5">
+              <label class="text-xs font-bold text-stone-600 uppercase">Discount</label>
+              <input type="number" name="discount" value="0" class="w-full px-4 py-2.5 rounded-lg border border-stone-200 focus:ring-2 focus:ring-stone-800 outline-none text-stone-700" />
+            </div>
         <div>
           <label class="block text-sm font-medium text-amber-900">Description</label>
           <input type="text" name="description" class="mt-1 block w-full rounded-md border-stone-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm p-2.5 border" placeholder="Description">
@@ -282,7 +287,9 @@ export function createItemsPage() {
   container.querySelector('#addProductForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    createInventory(formData);
+    createInventory(formData)
+      .then(response => { showToast("Created Product", "success") })
+      .catch(error => { showToast(error, "error") });
   });
   return container;
 }
@@ -308,8 +315,8 @@ export function editItemPage(product) {
       <div class="w-full md:w-2/5 bg-stone-50 flex flex-col items-center justify-center p-6 border-b md:border-b-0 md:border-r border-stone-100">
         <div class="w-full h-48 md:h-64 rounded-lg overflow-hidden bg-white flex items-center justify-center">
           ${product?.image_link
-            ? `<img src="${product.image_link}" class="object-cover w-full h-full" id="form-image-preview" />`
-            : `<i class="fa-regular fa-image text-4xl text-stone-200" id="form-image-preview"></i>`}
+      ? `<img src="${product.image_link}" class="object-cover w-full h-full" id="form-image-preview" />`
+      : `<i class="fa-regular fa-image text-4xl text-stone-200" id="form-image-preview"></i>`}
         </div>
         <p class="text-xs text-stone-400 italic mt-3">Image aspect ratio 1:1 recommended</p>
       </div>
@@ -332,6 +339,10 @@ export function editItemPage(product) {
               <label class="text-xs font-bold text-stone-600 uppercase">Stock Units</label>
               <input type="number" name="quantity" value="${product?.quantity ?? ''}" class="w-full px-4 py-2.5 rounded-lg border border-stone-200 focus:ring-2 focus:ring-stone-800 outline-none text-stone-700" />
             </div>
+            <div class="flex flex-col gap-1.5">
+              <label class="text-xs font-bold text-stone-600 uppercase">Discount</label>
+              <input type="number" name="discount" value="0" class="w-full px-4 py-2.5 rounded-lg border border-stone-200 focus:ring-2 focus:ring-stone-800 outline-none text-stone-700" />
+            </div>
           </div>
           <div class="flex flex-col gap-1.5">
             <label class="text-xs font-bold text-stone-600 uppercase">Category</label>
@@ -353,7 +364,9 @@ export function editItemPage(product) {
   container.querySelector('#editItemForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    updateInventory(formData);
+    updateInventory(formData)
+      .then(response => { showToast("Updated Product", "success") })
+      .catch(error => { showToast(error.message, "error") });
   });
   return container;
 }

@@ -40,14 +40,14 @@ function handleUpdateItem($dbh)
 
     $description = filter_input(INPUT_POST, 'description', FILTER_SANITIZE_SPECIAL_CHARS);
 
-    $f_discount = filter_input(INPUT_POST, 'discount_percent', FILTER_VALIDATE_FLOAT);
+    $f_discount = filter_input(INPUT_POST, 'discount', FILTER_VALIDATE_FLOAT);
     $discount = ($f_discount !== false) ? $f_discount : null;
 
     $category = filter_input(INPUT_POST, 'category', FILTER_SANITIZE_SPECIAL_CHARS);
 
     // 2. Strict Validation
     // We check if required fields are null or false
-    if ($id === null || $id === false || $name === null || $price === null || $quantity === null) {
+    if ($id === null || $id === false || $name === null || $price === null || $quantity === null || $discount == null) {
         http_response_code(400);
         echo json_encode([
             "error" => "Required fields missing or invalid",
@@ -115,6 +115,25 @@ function removeItem($dbh)
     echo json_encode(["error" => "Invalid ID"]);
     exit;
   }
+ $stmt = $dbh->prepare("SELECT image_url FROM products WHERE product_id = ?");
+ $stmt->execute([$id]);
+
+ $imagePath = $stmt->fetchColumn();
+
+ if ($imagePath) {
+
+    // Convert URL to filesystem path
+    $baseUrl = "http://cs1xd3.cas.mcmaster.ca/~randevv";
+    $baseFs  = "/home/randevv/public_html";
+
+    $fsPath = str_replace($baseUrl, $baseFs, $imagePath);
+
+    // Safely delete file
+    if (file_exists($fsPath)) {
+        unlink($fsPath);
+    }
+ }
+  
 
   $stmt = $dbh->prepare("DELETE FROM products WHERE product_id = ?");
   $stmt->bindValue(1, $id, $id ? PDO::PARAM_INT : PDO::PARAM_NULL);

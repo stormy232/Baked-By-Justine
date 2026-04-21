@@ -64,7 +64,6 @@ function userRow(user, onEdit) {
             })
             .catch((error) => {
               // Always include a catch block for network errors/server crashes
-              console.error("Deletion failed:", error);
               showToast("Failed to remove user", "error");
             });
         };
@@ -221,7 +220,9 @@ export function createUserPage() {
   container.querySelector('#addUserForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    registerUser(formData);
+    registerUser(formData)
+    .then(result => {showToast("User Created", "success")})
+    .catch(error => {showToast(error.message,"error")})
   });
   return container;
 }

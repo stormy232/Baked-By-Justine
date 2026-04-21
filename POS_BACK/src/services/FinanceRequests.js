@@ -1,4 +1,3 @@
-import { showToast } from "../components/permissions.js";
 
 /**
  * Name: Vardaan Randev
@@ -16,10 +15,9 @@ export async function getFinancials(start, end) {
     const url = `/~randevv/Justine_Bakes/POS_BACK/api/finance/FinancialReports.php?start=${start}&end=${end}`;
     try {
         const response = await fetch(url);
-        if (!response.ok) throw new Error();
+        if (!response.ok) throw new Error("Unable to process request on server");
         return await response.json();
     } catch (error) {
-        showToast("Could not generate financial report.", "error");
-        return { errors: ["Failed to connect to server"] };
+        throw new Error("Difficulty sending request");
     }
 }

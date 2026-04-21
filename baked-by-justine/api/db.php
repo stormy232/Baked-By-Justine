@@ -1,8 +1,8 @@
 <?php
 /**
  * db.php
- * Database connection for XAMPP localhost.
- * Include this in every API endpoint.
+ * Database connection
+ * Included in every API endpoint.
  */
 
 // Creators: Abdullah Musani & Ridwan Moalim, Vardaan Randev

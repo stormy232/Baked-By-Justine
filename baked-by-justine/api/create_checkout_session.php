@@ -73,13 +73,13 @@ try {
         ];
     }
 
-    // Build the success URL — passes email and prep time back so confirm page can use them
+    // Build the success URL - passes email and prep time back so confirm page can use them
     $baseUrl    = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'];
     $projectDir = dirname(dirname($_SERVER['SCRIPT_NAME']));
     $successUrl = $baseUrl . $projectDir . '/confirm.html?session_id={CHECKOUT_SESSION_ID}&email=' . urlencode($email) . '&prep=' . urlencode($prepTime);
     $cancelUrl  = $baseUrl . $projectDir . '/order.html';
 
-    // Build POST data for Stripe API using cURL (no Composer needed)
+    // Build POST data for Stripe API using cURL (no Composer)
     $postData = 'customer_email=' . urlencode($email);
     $postData .= '&mode=payment';
     $postData .= '&success_url=' . urlencode($successUrl);

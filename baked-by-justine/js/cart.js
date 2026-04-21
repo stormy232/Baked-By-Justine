@@ -6,7 +6,8 @@
    Abdullah Musani, Ridwan Moalim for fixes
 
     Ridwan's Fixes:
-   Changed the way cart works via accessing a cart table instead of sessionStorage
+   Fixed the way cart works by linking it with a table that stores products in the cart, 
+   instead of using sessionStorage like previously
    Emptied save() and load() to no longer write to localstorage
    Added loadfromDB() method that fetches from api/cart.php and rebuilds cart.items
    Added discount_price calculation inside loadFromDB() so cart.render does not show NaN anymore

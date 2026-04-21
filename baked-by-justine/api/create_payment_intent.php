@@ -1,9 +1,9 @@
 <?php
 
  
+//  Creator: Ridwan Moalim
 //  api/create_payment_intent.php
 //  POST - creates a Stripe PaymentIntent for the cart total.
-//  
 //  
 
 

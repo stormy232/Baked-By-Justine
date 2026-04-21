@@ -1,4 +1,8 @@
 <?php
+// Name: Vardaan Randev
+// Date Created: April 20, 2026
+// Description: API endpoint that handles user authentication. Verifies submitted
+//              credentials against the database and initializes a session on success.
 header("Access-Control-Allow-Origin: localhost");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
@@ -11,6 +15,13 @@ switch ($_SERVER["REQUEST_METHOD"]) {
     break;
 };
 
+/**
+ * Authenticates a user by verifying their username and hashed password against the database.
+ * On success, stores the user's ID and privilege level in the session.
+ *
+ * @param PDO $dbh The active PDO database connection
+ * @return void Outputs a JSON success or error message; sets session variables on successful login
+ */
 function AuthorizeUser($dbh)
 {
   $username = filter_input(INPUT_POST, "username", FILTER_SANITIZE_SPECIAL_CHARS);

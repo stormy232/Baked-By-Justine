@@ -1,6 +1,12 @@
 import { logoutUser } from "../services/UserRequests";
 
 /**
+ * Name: Vardaan Randev
+ * Date: April 20, 2026
+ * Description: Implements sidebar components
+ */
+
+/**
  * SideBar Button Component
  * @param {String} label -> Button Label
  * @param {String} iconClass -> string for fontAwesome emoji

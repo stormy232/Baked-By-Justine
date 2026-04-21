@@ -1,3 +1,18 @@
+/**
+ * Name: Vardaan Randev
+ * Date: April 20, 2026
+ * Description: Implements a toast notification popup for when userPermissions aren't met or db changes
+ */
+ 
+/**
+ * Displays a temporary toast notification in the bottom-right corner of the screen.
+ * Creates a shared toast container if one does not already exist.
+ *
+ * @param {String} message - The text message to display inside the toast
+ * @param {String} type - The type of toast; 'success' shows green styling, any other value shows red; defaults to 'success'
+ * @param {Number} duration - How long (in milliseconds) the toast remains visible before auto-dismissing; defaults to 3000
+ * @returns {void}
+ */
 export function showToast(message, type = 'success', duration = 3000) {
   // 1. Ensure a container exists to hold the toasts
   let container = document.getElementById('toast-container');

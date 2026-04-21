@@ -1,7 +1,22 @@
 import { createInventory, removeInventory, updateInventory } from "../services/InventoryRequests";
 import { showToast } from "./permissions";
 
-// Critical alert card (mobile wireframe)
+/**
+ * Name: Vardaan Randev
+ * Date: April 20, 2026
+ * Description: Implements components for inventory page as well as an inventoryPage Builder
+ * and forms to add or edit products
+ */
+
+/**
+ * Generates an HTML string for a compact low-stock alert card used in the critical alerts banner.
+ *
+ * @param {Object} product - The low-stock product to display, containing:
+ *   - {String} name - Product name
+ *   - {Number} quantity - Current stock quantity
+ *   - {String} [sku] - Product SKU identifier (optional)
+ * @returns {String} An HTML string representing the alert card
+ */
 function alertCard(product) {
   return `
     <div class="border-l-2 border-red-400 pl-3 flex flex-col gap-0.5">
@@ -14,7 +29,20 @@ function alertCard(product) {
   `;
 }
 
-// Single inventory row for desktop list view
+/**
+ * Creates and returns a styled table row DOM element representing a single inventory product.
+ *
+ * @param {Object} product - The product data to display, containing:
+ *   - {String} name - Product name
+ *   - {String} category - Product category
+ *   - {Number} quantity - Current stock quantity
+ *   - {Number} price - Product price
+ *   - {String} [image_link] - URL of the product image (optional)
+ *   - {String} [unit] - Unit of measurement (optional)
+ *   - {String|Number} product_id - Unique identifier used for deletion
+ * @param {Function} onSelect - Callback invoked with the product object when the row is clicked
+ * @returns {HTMLElement} A <tr> element for use in the inventory desktop table
+ */
 function inventoryRow(product, onSelect) {
   const isLow = product.quantity <= 5;
   const tr = document.createElement('tr');
@@ -72,7 +100,18 @@ tr.addEventListener('click', () => onSelect(product));
   return tr;
 }
 
-// Mobile card for inventory
+/**
+ * Creates and returns a styled card DOM element representing a single inventory product for mobile view.
+ *
+ * @param {Object} product - The product data to display, containing:
+ *   - {String} name - Product name
+ *   - {String} category - Product category
+ *   - {Number} quantity - Current stock quantity
+ *   - {String} [image_link] - URL of the product image (optional)
+ *   - {String} [unit] - Unit of measurement (optional)
+ * @param {Function} onSelect - Callback invoked with the product object when the card is clicked
+ * @returns {HTMLElement} A styled div card element for the mobile inventory list
+ */
 function inventoryCard(product, onSelect) {
   const isLow = product.quantity <= 5;
   const card = document.createElement('div');
@@ -101,6 +140,15 @@ function inventoryCard(product, onSelect) {
   return card;
 }
 
+/**
+ * Builds and renders the full inventory page into the given container, including
+ * low-stock alerts, category filter pills, a mobile card list, and a desktop table.
+ *
+ * @param {Array<Object>} products - Array of all inventory product objects to display
+ * @param {HTMLElement} container - The DOM element to render the inventory UI into
+ * @param {Function} onCardSelected - Callback invoked with a product object when a card or row is selected for editing
+ * @returns {void}
+ */
 export function buildInventoryPage(products, container, onCardSelected) {
   container.innerHTML = '';
 
@@ -189,6 +237,12 @@ export function buildInventoryPage(products, container, onCardSelected) {
   renderProducts();
 }
 
+/**
+ * Creates and returns the Add Product form page as a DOM element.
+ * Handles form submission by calling createInventory with the form data.
+ *
+ * @returns {HTMLElement} A container div with the Add Product form
+ */
 export function createItemsPage() {
   const container = document.createElement('div');
   container.className = "min-h-screen bg-stone-100 p-6 flex w-full justify-center items-center";
@@ -233,6 +287,19 @@ export function createItemsPage() {
   return container;
 }
 
+/**
+ * Creates and returns the Edit Product form page as a DOM element pre-filled with existing product data.
+ * Handles form submission by calling updateInventory with the updated form data.
+ *
+ * @param {Object} product - The existing product to edit, containing:
+ *   - {String} name - Product name
+ *   - {Number} price - Product price
+ *   - {Number} quantity - Current stock quantity
+ *   - {String} category - Product category
+ *   - {String} [image_link] - URL of the product image (optional)
+ *   - {String|Number} product_id - Unique identifier for the product
+ * @returns {HTMLElement} A container div with the pre-filled Edit Product form
+ */
 export function editItemPage(product) {
   const container = document.createElement('div');
   container.className = "min-h-screen bg-stone-100 p-6 flex w-full justify-center items-center";

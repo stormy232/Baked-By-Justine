@@ -1,4 +1,9 @@
 <?php
+// Name: Vardaan Randev
+// Date Created: April 20, 2026
+// Description: API endpoint for modifying existing inventory records. Handles updating
+//              product details (including optional image replacement) via POST,
+//              and deleting a product by ID via GET.
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json");
 require_once "../config.php";
@@ -12,6 +17,14 @@ switch ($_SERVER["REQUEST_METHOD"]) {
         break;
 }
 
+/**
+ * Updates an existing product record in the database with new field values.
+ * Optionally replaces the product image if a new file is uploaded.
+ * Uses COALESCE to preserve existing values for any fields not provided.
+ *
+ * @param PDO $dbh The active PDO database connection
+ * @return void Outputs a JSON success or error message
+ */
 function handleUpdateItem($dbh)
 {
     // 1. Filter incoming fields directly from POST
@@ -88,6 +101,12 @@ function handleUpdateItem($dbh)
     }
 }
 
+/**
+ * Deletes a product from the database by its ID.
+ *
+ * @param PDO $dbh The active PDO database connection
+ * @return void Outputs a JSON success or error message
+ */
 function removeItem($dbh)
 {
   $id = filter_input(INPUT_GET, "id", FILTER_VALIDATE_INT);

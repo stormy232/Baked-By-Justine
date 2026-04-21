@@ -1,4 +1,9 @@
 <?php
+// Name: Vardaan Randev
+// Date Created: April 20, 2026
+// Description: API endpoint for managing delivery orders. Handles retrieving orders
+//              with their associated products, and updating order delivery status.
+//              Restricted to authenticated owners and employees.
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
@@ -15,6 +20,14 @@ switch ($_SERVER["REQUEST_METHOD"]) {
     handleUpdateDeliveryStatus($dbh);
 };
 
+/**
+ * Retrieves all orders with their associated product line items within a date range.
+ * Groups flat SQL join rows into nested order objects, each containing an items array.
+ * Requires the session user to have 'owner' or 'employee' privilege.
+ *
+ * @param PDO $dbh The active PDO database connection
+ * @return void Outputs a JSON array of order objects, each with order details and a nested items array
+ */
 function getOrdersWithProducts($dbh) {
     if ($_SESSION["privilege"] !== "owner" && $_SESSION["privilege"] !== "employee"){
         http_response_code(400);
@@ -82,6 +95,13 @@ function getOrdersWithProducts($dbh) {
     }
 }
 
+/**
+ * Updates the delivery status of a specific order and sends a notification email if the order is marked as finished.
+ * Requires the session user to have 'owner' or 'employee' privilege.
+ *
+ * @param PDO $dbh The active PDO database connection
+ * @return void Outputs a JSON success or error message; sends an email to the customer if status is 'finished'
+ */
 function handleUpdateDeliveryStatus($dbh)
 {
      if ($_SESSION["privilege"] !== "owner" && $_SESSION["privilege"] !== "employee"){

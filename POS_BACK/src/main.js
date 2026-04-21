@@ -6,7 +6,7 @@
  */
 
 import { sideButton, userProfileButton } from "./components/sidebar.js";
-import { createSearchBar, createTopBarIcons } from "./components/searchbar.js";
+import { createSearchBar } from "./components/searchbar.js";
 import { buildInventoryPage, createItemsPage, editItemPage } from "./components/inventory.js";
 import { getInventory } from "./services/InventoryRequests.js";
 import { createButton } from "./components/createButton.js";
@@ -206,8 +206,7 @@ if (topBar) {
         (route) => router.go(route)
     );
 
-    const topBarIcons = createTopBarIcons();
-    topBar.append(searchBar, topBarIcons);
+    topBar.append(searchBar);
 }
 
   window.router = router;

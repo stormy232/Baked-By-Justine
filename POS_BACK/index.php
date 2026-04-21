@@ -1,4 +1,7 @@
 <!doctype html>
+// Name: Vardaan Randev
+// Date Created: April 20, 2026
+// Description: Company Backend enpoint -> essentially index.html but had to be wrapped in php to keep track of $_SESSION vars
 <?php
 session_start();
 if(!isset($_SESSION["user"]) || !isset($_SESSION["privilege"])){

@@ -6,7 +6,7 @@
    Abdullah Musani, Ridwan Moalim for fixes
 
     Ridwan's Fixes:
-   Fixed the way cart works by linking it with a table that stores products in the cart, 
+   Reimplemented the way cart.js works by linking it with a table that stores products in the cart
    instead of using sessionStorage like previously
    Emptied save() and load() to no longer write to localstorage
    Added loadfromDB() method that fetches from api/cart.php and rebuilds cart.items

@@ -5,7 +5,9 @@
  * Static fallback matches sample_data.sql exactly including image URLs.
  * 
  * Contributors:
- * Ridwan Moalim, and Abdullah added hardcoded products
+ * Ridwan Moalim, and Abdullah added hardcoded products, though if you open these links,
+ * for the most part it either opens a 404 error, or a completely wrong product, so as a fix I found proper
+ * images and store them in the products table
  * 
  */
 

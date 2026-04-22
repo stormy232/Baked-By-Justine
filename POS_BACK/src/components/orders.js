@@ -124,14 +124,14 @@ function orderCard(order) {
       if (!newStatus) return;
       btn.disabled = true;
       btn.textContent = 'Updating...';
-      const result = await updateOrder(id, newStatus);
-      if (result) {
+      const result =  updateOrder(id, newStatus);
+      result.then(result => {
         const list = document.querySelector('#orders-list');
         if (list) renderOrders(list);
-      } else {
+      }).catch(() => {
         btn.disabled = false;
         btn.textContent = 'Retry';
-      }
+      });
     });
   });
 
@@ -141,11 +141,12 @@ function orderCard(order) {
 
 async function renderOrders(listEl, filter = 'all', start_date = null, end_date = null) {
   listEl.innerHTML = '<p class="text-stone-400 text-sm text-center py-8">Loading...</p>';
-  const orders = await getOrders(start_date, end_date);
-  if (!orders) {
+  const orders = getOrders(start_date, end_date);
+  orders.catch( orders => {
     listEl.innerHTML = '<p class="text-stone-400 text-sm text-center py-8">Could not load orders.</p>';
     return;
-  }
+  })
+  .then( orders => {
   const filtered = filter === 'all'
     ? orders
     : filter === 'active'
@@ -158,6 +159,7 @@ async function renderOrders(listEl, filter = 'all', start_date = null, end_date 
     return;
   }
   filtered.forEach(o => listEl.append(orderCard(o)));
+});
 }
 
 export async function createOrdersPage(container) {

@@ -1,4 +1,3 @@
-import { showToast } from "../components/permissions.js";
 
 /**
  * Name: Vardaan Randev
@@ -8,7 +7,7 @@ import { showToast } from "../components/permissions.js";
 
 const url = "/~randevv/Justine_Bakes/POS_BACK/api/users/register.php";
 const updateURL = "/~randevv/Justine_Bakes/POS_BACK/api/users/updateUser.php";
-const logoutURL = "/~randevv/Justine_Bakes/POS_BACK/api/users/logoutUser.php"
+const logoutURL = "/~randevv/Justine_Bakes/POS_BACK/api/users/logout.php"
 
 /**
  * Fetches the full list of registered staff users from the server.
@@ -19,13 +18,11 @@ export async function getUsers() {
   try {
     const response = await fetch(updateURL);
     if (!response.ok) { 
-      showToast("Failed to retrieve staff list.", "error"); 
-      return null; 
+     throw new Error("Failed to retrieve staff list."); 
     }
     return await response.json();
   } catch (err) {
-    showToast("Network error: Could not reach user server.", "error");
-    return null;
+   throw new Error("Network error: Could not reach user server.");
   }
 }
 
@@ -39,14 +36,12 @@ export async function registerUser(formData) {
   try {
     const response = await fetch(url, { method: "POST", body: formData });
     if (!response.ok) { 
-      showToast("Could not register new user.", "error"); 
-      return null; 
+     throw new Error("Could not register new user."); 
     }
-    showToast("User registered successfully!", "success");
+   throw new Error("User registered successfully!", "success");
     return await response.json();
   } catch (err) {
-    showToast("Error connecting to registration service.", "error");
-    return null;
+   throw new Error("Error connecting to registration service.");
   }
 }
 
@@ -61,14 +56,13 @@ export async function updateUser(formData) {
   try {
     const response = await fetch(updateURL, { method: "POST", body: formData });
     if (!response.ok) { 
-      showToast("Update failed: Server rejected the changes.", "error"); 
-      return null; 
+     throw new Error("Update failed: Server rejected the changes."); 
     }
-    showToast("User profile updated.", "success");
+   throw new Error("User profile updated.", "success");
     return await response.json();
   } catch (err) {
-    showToast("Connection lost: User update failed.", "error");
-    return null;
+   throw new Error("Connection lost: User update failed.");
+   
   }
 }
 
@@ -83,14 +77,14 @@ export async function deleteUser(id) {
   try {
     const response = await fetch(url + `?userid=${id}`);
     if (!response.ok) { 
-      showToast("Update failed: Server rejected the changes.", "error"); 
-      return null; 
+     throw new Error("Update failed: Server rejected the changes."); 
+      
     }
-    showToast("User profile updated.", "success");
+   throw new Error("User profile updated.", "success");
     return await response.json();
   } catch (err) {
-    showToast("Connection lost: User update failed.", "error");
-    return null;
+   throw new Error("Connection lost: User update failed.");
+   
   }
 }
 
@@ -102,15 +96,13 @@ export async function deleteUser(id) {
  */
 export async function logoutUser() {
   try {
-    const response = await fetch(url);
+    const response = await fetch(logoutURL);
     if (!response.ok) { 
-      showToast("Update failed: Server rejected the changes.", "error"); 
-      return null; 
+     throw new Error("Update failed: Server rejected the changes."); 
     }
-    showToast("User profile updated.", "success");
     return await response.json();
   } catch (err) {
-    showToast("Connection lost: User update failed.", "error");
-    return null;
+   throw new Error("Connection lost: User update failed.");
+   
   }
 }

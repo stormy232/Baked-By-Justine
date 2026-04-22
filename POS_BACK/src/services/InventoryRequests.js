@@ -1,4 +1,3 @@
-import { showToast } from "../components/permissions.js";
 
 /**
  * Name: Vardaan Randev
@@ -21,12 +20,11 @@ export async function getInventory(category = "All", searchTerm = "", limit = 50
     try {
         const response = await fetch(url + `?category=${category}&name=${searchTerm}&limit=${limit}&start=${start}`);
         if (!response.ok) {
-            showToast("Could not load inventory data.", "error");
-            return null;
+            throw new Error("Could not load inventory data.");
         }
         return await response.json();
     } catch (error) {
-        showToast("Server unreachable: Inventory offline.", "error");
+        throw new Error("Server unreachable: Inventory offline.");
     }
 }
 
@@ -35,17 +33,21 @@ export async function getInventory(category = "All", searchTerm = "", limit = 50
  * @param {FormData} formData
  * @returns {Object || null} response
  */
-export function updateInventory(formData) {
-    fetch(updateURL, {
-        method: "POST",
-        body: formData,
-    })
-    .then(response => {
-        if (!response.ok) throw new Error();
-        showToast("Inventory updated successfully!", "success");
-        return response.json();
-    })
-    .catch(() => showToast("Failed to save inventory changes.", "error"));
+export async function updateInventory(formData) {
+  try {
+    const response = await fetch(updateURL, {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error("Could not update inventory.");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error("Server unreachable: Inventory offline.");
+  }
 }
 
 
@@ -54,12 +56,20 @@ export function updateInventory(formData) {
  * @param {Number} inventoryId
  * @returns {Object || null} response
  */
-export function removeInventory(inventoryId){
-  fetch(updateURL+`?id=${inventoryId}` , {
-    method: "GET" 
-  })
-  .then(response => {if(!response.ok){console.error("ISSUE");} return response.json()})
-  .catch(error => console.error(`error: ${error}`)); 
+export async function removeInventory(inventoryId) {
+  try {
+    const response = await fetch(updateURL + `?id=${inventoryId}`, {
+      method: "GET",
+    });
+
+    if (!response.ok) {
+      throw new Error("Couldn't delete product.");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error("Server unreachable: Inventory offline.");
+  }
 }
 
 /**
@@ -67,15 +77,19 @@ export function removeInventory(inventoryId){
  * @param {FormData} formData
  * @returns {Object || null} response
  */
-export function createInventory(formData){
-  fetch(url, {
-    method: "POST",
-    body: formData
-  })
-   .then(response => {
-        if (!response.ok) throw new Error();
-        showToast("Inventory updated successfully!", "success");
-        return response.json();
-    })
-    .catch(() => showToast("Failed to save inventory changes.", "error"));
+export async function createInventory(formData) {
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error("Couldn't create product.");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error("Server unreachable: Inventory offline.");
+  }
 }

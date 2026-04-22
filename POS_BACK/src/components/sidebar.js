@@ -1,4 +1,5 @@
 import { logoutUser } from "../services/UserRequests";
+import { showToast } from "./permissions";
 
 /**
  * Name: Vardaan Randev
@@ -14,23 +15,23 @@ import { logoutUser } from "../services/UserRequests";
  * @returns {HTMLElement} This function returns html DOM Element
  */
 export function sideButton(label, iconClass, onClick) {
-  const button = document.createElement("div");
-  
-  // Layout and Hover effects
-  // We use bg-[#E8E8E3] as the base and hover:bg-bakery-mint for interaction
-  button.className = "flex flex-row items-center gap-3 px-4 py-3 rounded-lg text-[#2d2621] hover:bg-surface-hover transition-colors cursor-pointer font-medium";
+    const button = document.createElement("div");
 
-  // Icon Element (FontAwesome)
-  const icon = document.createElement("i");
-  icon.className = `fa-solid ${iconClass} text-[#6b6661]`; // Muted brown for icons
+    // Layout and Hover effects
+    // We use bg-[#E8E8E3] as the base and hover:bg-bakery-mint for interaction
+    button.className = "flex flex-row items-center gap-3 px-4 py-3 rounded-lg text-[#2d2621] hover:bg-surface-hover transition-colors cursor-pointer font-medium";
 
-  // Label Element
-  const text = document.createElement("span");
-  text.textContent = label;
+    // Icon Element (FontAwesome)
+    const icon = document.createElement("i");
+    icon.className = `fa-solid ${iconClass} text-[#6b6661]`; // Muted brown for icons
 
-  button.append(icon, text);
-  button.addEventListener("click", onClick);
-  return button;
+    // Label Element
+    const text = document.createElement("span");
+    text.textContent = label;
+
+    button.append(icon, text);
+    button.addEventListener("click", onClick);
+    return button;
 }
 
 /**
@@ -40,24 +41,24 @@ export function sideButton(label, iconClass, onClick) {
  * @returns {HTMLElement} This function returns html DOM Element
  */
 export function userProfileButton(User, Status) {
-const containerDiv = document.createElement("div");
+    const containerDiv = document.createElement("div");
 
-// Layout and Theme matching
-containerDiv.className="flex flex-row items-center gap-3 px-3 py-2 rounded-lg text-black cursor-pointer mt-auto bg-surface-hover transition-colors duration-200"
-// Title/Status container
-const titleDiv = document.createElement("div");
-titleDiv.className = "flex flex-col leading-tight"; // leading-tight keeps the name and status close together
+    // Layout and Theme matching
+    containerDiv.className = "flex flex-row items-center gap-3 px-3 py-2 rounded-lg text-black cursor-pointer mt-auto bg-surface-hover transition-colors duration-200"
+    // Title/Status container
+    const titleDiv = document.createElement("div");
+    titleDiv.className = "flex flex-col leading-tight"; // leading-tight keeps the name and status close together
 
-const userTitle = document.createElement("span");
-userTitle.className = "font-bold text-sm";
-userTitle.textContent = User;
+    const userTitle = document.createElement("span");
+    userTitle.className = "font-bold text-sm";
+    userTitle.textContent = User;
 
-const userStatus = document.createElement("span");
-userStatus.className = "text-xs text-[#6b6661]"; // Using your muted brown/gray for the status
-userStatus.textContent = Status;
+    const userStatus = document.createElement("span");
+    userStatus.className = "text-xs text-[#6b6661]"; // Using your muted brown/gray for the status
+    userStatus.textContent = Status;
 
-titleDiv.append(userTitle, userStatus);
-const logoutBtn = document.createElement("button");
+    titleDiv.append(userTitle, userStatus);
+    const logoutBtn = document.createElement("button");
     logoutBtn.className = "p-1.5 hover:bg-gray-200 rounded-md transition-colors text-[#6b6661] hover:text-red-600";
     // Using a simple SVG icon for a cleaner look
     logoutBtn.innerHTML = `
@@ -67,18 +68,23 @@ const logoutBtn = document.createElement("button");
             <line x1="21" y1="12" x2="9" y2="12"></line>
         </svg>
     `;
-    
+
     // Placeholder for your functionality
     logoutBtn.addEventListener("click", (e) => {
         e.stopPropagation(); // Prevents the containerDiv click from firing
-        logoutUser();
-        localStorage.removeItem("user_id");
-        localStorage.removeItem("privilege");
-        location.reload();
-      });
+        logoutUser()
+            .then(response => {
+                localStorage.removeItem("user_id");
+                localStorage.removeItem("privilege");
+                showToast("User Logged Out", "success");
+                setTimeout(location.reload(), 200);
+            })
+            .catch(error => {showToast("Error: Logging out Server Issue", "error")});
+
+    });
 
     containerDiv.append(titleDiv, logoutBtn);
-    
+
     return containerDiv;
 }
 

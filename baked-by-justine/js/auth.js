@@ -399,12 +399,7 @@ function injectNavBtn() {
   if (existing) existing.remove();
 
   const li = document.createElement('li');
-  li.id = 'navAuthLi';
-  li.innerHTML = `
-    <button class="nav-signin-btn" onclick="openAuthModal('login')">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-      Sign In
-    </button>`;
+  
 
   const last = navLinks.lastElementChild;
   if (last) navLinks.insertBefore(li, last);
@@ -441,12 +436,8 @@ function renderNavUser(user) {
 function renderNavGuest() {
   const li = document.getElementById('navAuthLi');
   if (!li) return;
-  li.innerHTML = `
-    <button class="nav-signin-btn" onclick="openAuthModal('login')">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-      Sign In
-    </button>`;
-  document.removeEventListener('click', outsideClick);
+  
+  
 }
 
 function outsideClick(e) {
